@@ -1,25 +1,39 @@
 class Personnage{
-    constructor(){
-        this.speed = 20;
+    constructor(l){
+        this.speed = 1; 
         this.vies = 3;
-        this.oldPosX = 20;
-        this.oldPosY = 20;
-        this.posX = 20;
-        this.posY = 20;
+        this.oldPosX = 1; //utilisé pour n'avoir qu'à redessiner la case sur laquelle on était, plutôt que toute la grille
+        this.oldPosY = 1;
+        this.posX = 1;
+        this.posY = 1;
         this.height = 20;
         this.width = 20;
-
-
+        this.level = l;
+        this.self = this;
+        this.droppedBombs = [];
     }
 
-    draw(){
-        let canvas = document.getElementById("cvn");
-        let context = canvas.getContext("2d");
-        context.fillStyle = '#ffffff';
-        context.fillRect(this.oldPosX, this.oldPosY, this.width, this.height);
-        context.fillStyle = '#000000';
-        context.fillRect(this.posX, this.posY, this.width, this.height);
+    move(x,y){
+        let newX = Math.floor((this.posX+x));
+        let newY = Math.floor((this.posY+y));
+        //console.log("from x : "+this.posX+" y : "+this.posY);
+        
+        //console.log("to x : "+newX+" y : "+newY+'\n');
+        
+
+        let nextBloc = this.level.grille[newY][newX];
+
+        if(nextBloc.passable){
+            this.oldPosX = this.posX;
+            this.oldPosY = this.posY;
+            this.posX+=x;
+            this.posY+=y;
+        }
     }
-    
+
+    dropBomb(){
+            let bomb = new Bombe(this.posX, this.posY, 2, 4, this.self);
+            this.droppedBombs.push(bomb);
+        }
 
 }

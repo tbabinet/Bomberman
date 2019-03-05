@@ -1,4 +1,4 @@
-function readJSon(file)
+async function readJSon(file)
 {
     let lvl = new Niveau();
     let p = new Promise(function (success, failure) {
@@ -13,34 +13,46 @@ function readJSon(file)
          
     });
 
-    p.then(function (resp) {
-        lvl = jsonToLevel(JSON.parse(resp));
+    lvl = await p.then(function (resp) {
+        return jsonToLevel(JSON.parse(resp));
     });
+    return lvl;
 }
 
-function jsonToLevel(obj) {
-    
-    let canvas = document.getElementById("cvn");
-    let context = canvas.getContext("2d");
+function jsonToLevel(obj) { 
     let grid = obj.level;
-    let gridBloc = new Array(30);
+    let gridBloc = new Array();
     let i = 0;
     grid.forEach(line => {
         let j = 0;
-        let ligne = new Array(40);
-        
+        let ligne = new Array();
         line.forEach(col=>{
-            let bloc = new Bloc(i,j,grid[i][j], false, true);
-            context.fillStyle = '#ffffff';
-            context.fillRect(j*20, i*20, 20, 20);
-            ligne[j]=bloc;
+            let bloc = new Bloc();
+            switch (col) {
+                case 0://bords du niveau
+                    bloc = new Bloc(i,j,grid[i][j], false, false);
+                    break;
+                case 1://sol simple
+                    bloc = new Bloc(i,j,grid[i][j], false, true);
+                    break;
+                case 2://obstacle destructible
+                    bloc = new Bloc(i,j,grid[i][j], true, false);
+                    break;
+                case 3://obstacle indestructible
+                    bloc = new Bloc(i,j,grid[i][j], false, false);
+                    break;
+                case 4://sortie
+                    bloc = new Bloc(i,j,grid[i][j], false, true);
+                    break;
+            }
+            ligne.push(bloc);
             j++;
         });
-        gridBloc[i]=ligne;
+        gridBloc.push(ligne);
         i++;
     });
     let nv = new Niveau(gridBloc);
-    
+    return nv;
     
 }
 
