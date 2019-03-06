@@ -2,6 +2,10 @@ class Drawer{
     constructor(){
         this.canvas = document.getElementById("cvn");
         this.context = this.canvas.getContext("2d");
+        this.img_sol = new Image();
+        this.img_obst_dest = new Image();
+        //this.img_sol.src = "images/sol.jpg";
+        //this.img_obst_dest.src = "images/obst_dest.jpg";
     }
     
     drawChar(perso){
@@ -26,17 +30,19 @@ class Drawer{
             case 0://limites du niveau
                 this.context.fillStyle = '#000000';
                 break;
-            case 1://sol simple
-                this.context.fillStyle = '#00ffff';
+            case 1://sol simple 
+                this.context.fillStyle = '#f0f0f0';
+                //this.context.drawImage(this.img_sol, j*20, i*20);
                 break;
             case 2://obstacle destructible
-                this.context.fillStyle = '#ff00ff';
+                this.context.fillStyle = '#123456';
+                //this.context.drawImage(this.img_obst_dest, j*20, i*20);
                 break;
             case 3://obstacle indestructible
                 this.context.fillStyle = '#ffff00';
                 break;
             case 4://sortie recouverte
-                this.context.fillStyle = '#ff00ff';
+                this.context.fillStyle = '#123456';
                 break;
             case 5://sortie découverte
                 this.context.fillStyle = '#000ff0';
