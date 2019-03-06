@@ -35,21 +35,37 @@ class Drawer{
             case 3://obstacle indestructible
                 this.context.fillStyle = '#ffff00';
                 break;
-            case 4://sortie
-                this.context.fillStyle = '#ffff00';
+            case 4://sortie recouverte
+                this.context.fillStyle = '#ff00ff';
+                break;
+            case 5://sortie découverte
+                this.context.fillStyle = '#000ff0';
                 break;
         }
         this.context.fillRect(j*20, i*20, 20, 20);
     }
 
     drawBomb(bomb){
-        if(bomb.flash){
-            this.context.fillStyle = '#ffffff';
+        //console.log("drawBomb");
+        if(!bomb.explosed){  
+
+            if(bomb.flash){ 
+                this.context.fillStyle = '#ffffff';
+            }
+            else{  
+                this.context.fillStyle = '#0f0f0f';
+            }          
             this.context.fillRect(bomb.x*20, bomb.y*20, 20, 20);
         }
         else{
-            this.context.fillStyle = '#0f0f0f';
-            this.context.fillRect(bomb.x*20, bomb.y*20, 20, 20);
+            
+            this.context.fillStyle = '#ff8f00';
+            for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {
+                this.context.fillRect(i*20, bomb.y*20, 20, 20);
+            }
+            for (let i = bomb.y - bomb.rangeUp; i <= bomb.y + bomb.rangeDown; i++) {
+                this.context.fillRect(bomb.x*20, i*20, 20, 20);
+            }
         }
     }
     

@@ -10,16 +10,11 @@ class Personnage{
         this.width = 20;
         this.level = l;
         this.self = this;
-        this.droppedBombs = [];
     }
 
     move(x,y){
         let newX = Math.floor((this.posX+x));
         let newY = Math.floor((this.posY+y));
-        //console.log("from x : "+this.posX+" y : "+this.posY);
-        
-        //console.log("to x : "+newX+" y : "+newY+'\n');
-        
 
         let nextBloc = this.level.grille[newY][newX];
 
@@ -32,8 +27,9 @@ class Personnage{
     }
 
     dropBomb(){
-            let bomb = new Bombe(this.posX, this.posY, 2, 4, this.self);
-            this.droppedBombs.push(bomb);
+            let bomb = new Bombe(this.posX, this.posY, 2, 2, this.level);
+            return bomb;
+
         }
 
 }

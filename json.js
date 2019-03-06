@@ -35,14 +35,14 @@ function jsonToLevel(obj) {
                 case 1://sol simple
                     bloc = new Bloc(i,j,grid[i][j], false, true);
                     break;
-                case 2://obstacle destructible
+                case 2://obstacle destructible 
                     bloc = new Bloc(i,j,grid[i][j], true, false);
                     break;
                 case 3://obstacle indestructible
                     bloc = new Bloc(i,j,grid[i][j], false, false);
                     break;
-                case 4://sortie
-                    bloc = new Bloc(i,j,grid[i][j], false, true);
+                case 4://sortie pas découverte
+                    bloc = new Bloc(i,j,grid[i][j], false, false);
                     break;
             }
             ligne.push(bloc);
