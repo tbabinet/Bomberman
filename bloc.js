@@ -2,6 +2,7 @@ class Bloc{
 
     /**
      * 
+     * type :
         0 : bords du niveau
         1: sol
         2: bloc destructible
@@ -15,6 +16,44 @@ class Bloc{
         this.type=type;
         this.cassable = cassable;
         this.passable = passable;
+
+        addEventListener('bombExploded', (e)=>{
+            let bomb = e.detail;
+            for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {    
+                if(this.posX===bomb.y && this.posY===i){
+                    switch (this.type) {
+                        case 2://obstacle destructible
+                            this.type = 1;
+                            this.passable = true;
+                            break;
+                        case 4://sortie recouverte
+                            this.type = 5;
+                            this.passable = true;
+                            break;
+                        default:
+                            break;
+                    } 
+                }
+            }
+            
+            for (let j = bomb.y - bomb.rangeUp; j <= bomb.y + bomb.rangeDown; j++) {
+                if(this.posX===j && this.posY===bomb.x){
+                    switch (this.type) {
+                        case 2://obstacle destructible
+                            this.type = 1;
+                            this.passable = true;
+                            break;
+                        case 4://sortie recouverte
+                            this.type = 5;
+                            this.passable = true;
+                            break;
+                        default:
+                            break;
+                    } 
+                }
+                
+            }
+        });
     }
 
     

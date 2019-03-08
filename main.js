@@ -33,6 +33,7 @@ let init = async function () {
         if(e.keyCode==32){
             bombList.push(c.dropBomb());
         }//lâcher une bombe
+        
     });
 
     window.addEventListener('charMoved', (evt) => {

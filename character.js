@@ -10,6 +10,7 @@ class Personnage{
         this.width = 20;
         this.level = l;
         this.self = this;
+        
         this.deathEvt = new CustomEvent('charDie', {detail: this.self});
         addEventListener('bombExploded', (e)=>{
             let bomb = e.detail;
@@ -40,14 +41,33 @@ class Personnage{
         }
     }
 
-    dropBomb(){
-        let bomb = new Bombe(this.posX, this.posY, 2, 2, this.level);
-        return bomb;
+    move1(x, y){
+        let newX = Math.floor((this.posX+x));
+        let newY = Math.floor((this.posY+y));
+        let oldX = this.posX;
+        let oldY = this.posY;
+
+        let nextBloc = this.level.grille[newY][newX];
+        let interval;
+        if(nextBloc.passable){
+            interval = setInterval((x,y)=>{
+                if(this.posX!==newX || this.posY!==newY){
+                    this.posX+=(x/1000);
+                    this.posY+=(y/1000);
+                }
+                else{
+                    this.oldPosX=oldX;
+                    this.oldPosY=oldY;
+                    clearInterval(interval);
+                }
+            }, 16);
+        }
 
     }
 
-    die(){
-        
+    dropBomb(){
+        let bomb = new Bombe(this.posX, this.posY, 2, 2, this.level);
+        return bomb;
     }
 
 }
