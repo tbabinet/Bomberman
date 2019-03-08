@@ -1,7 +1,7 @@
 class Personnage{
     constructor(l){
         this.speed = 1; 
-        this.vies = 3;
+        //this.vies = 3;
         this.oldPosX = 1; //utilisé pour n'avoir qu'à redessiner la case sur laquelle on était, plutôt que toute la grille
         this.oldPosY = 1;
         this.posX = 1;
@@ -10,6 +10,20 @@ class Personnage{
         this.width = 20;
         this.level = l;
         this.self = this;
+        this.deathEvt = new CustomEvent('charDie', {detail: this.self});
+        addEventListener('bombExploded', (e)=>{
+            let bomb = e.detail;
+            for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {
+                if(this.posX==i && this.posY==bomb.y){
+                    window.dispatchEvent(this.deathEvt);
+                }
+            }
+            for (let j = bomb.y - bomb.rangeUp; j <= bomb.y + bomb.rangeDown; j++) {
+                if(this.posY==j && this.posX==bomb.x){
+                    window.dispatchEvent(this.deathEvt);
+                }
+            }
+        });
     }
 
     move(x,y){
@@ -27,9 +41,13 @@ class Personnage{
     }
 
     dropBomb(){
-            let bomb = new Bombe(this.posX, this.posY, 2, 2, this.level);
-            return bomb;
+        let bomb = new Bombe(this.posX, this.posY, 2, 2, this.level);
+        return bomb;
 
-        }
+    }
+
+    die(){
+        
+    }
 
 }

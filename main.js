@@ -8,11 +8,12 @@ let init = async function () {
         return res;
     });
     let c = new Personnage(l);
+    
     let bombList = new Array();
 
     let evt = new CustomEvent('charMoved', {detail: c});
 
-    window.addEventListener('keydown', function(e) {
+    window.addEventListener('keydown', function f (e) {
         if(e.keyCode==38 && c.posY>0){            
             c.move(0, -c.speed);
             window.dispatchEvent(evt);
@@ -39,19 +40,16 @@ let init = async function () {
         let cy = evt.detail.posY;
         if(l.grille[cy][cx].type===5){
             console.log("GAGNE !!");
-            
         }
-        
     });
 
- 
+    window.addEventListener('charDie', (evt) => {
+        console.log("PERDU !");
+        //window.removeEventListener('keydown');
+    });
+
     setInterval(()=>{
         bombList = bombList.filter(b=>b.decompteExplosion>0);
-        let explosionList = bombList.filter(b=>b.explosed == true);
-        explosionList.forEach(b => {
-            touchedBlocs = b.explose();
-            l.update(touchedBlocs);          
-        });
         c.level = l;
         drawer.drawLevel(l);
         drawer.drawChar(c);

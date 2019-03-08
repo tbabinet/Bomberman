@@ -1,4 +1,4 @@
-class Bombe extends Objet{
+class Bombe extends Objet {
     constructor(x, y, dmg, range, level){
         super(x,y);
         this.dmg = dmg;
@@ -11,7 +11,9 @@ class Bombe extends Objet{
         this.rangeRight = 2;
         this.rangeUp = 2;
         this.rangeDown = 2;
-
+        this.self = this;
+        this.evtExplosion = new CustomEvent('bombExploded', {detail: this.self});
+        
         /* 
         On détermine le rayon de l'explosion à gauche/droite et en haut/bas
 
@@ -54,27 +56,19 @@ class Bombe extends Objet{
                 this.decompteTimer-=0.5;          
                 this.flash=(!this.flash);    
             }
-            else{             
-                this.explosed = true;
+            else{
+                if(!this.explosed){
+                    this.explosed=true;
+                    window.dispatchEvent(this.evtExplosion);
+                }            
                 if(this.decompteExplosion>0){
                     this.decompteExplosion-=0.5
+                    window.dispatchEvent(this.evtExplosion);
                 }
                 else{
                     clearInterval(interval);
                 }
             }
         },500);
-    }
-
-    explose(){
-        let touchedBlocs = new Array()
-        for (let i = this.x - this.rangeLeft; i <= this.x + this.rangeRight; i++) {
-            touchedBlocs.push(this.level.grille[this.y][i]);
-        }
-        for (let j = this.y - this.rangeUp; j <= this.y + this.rangeDown; j++) {
-            touchedBlocs.push(this.level.grille[j][this.x]);
-        }
-
-        return touchedBlocs;
     }
 }
