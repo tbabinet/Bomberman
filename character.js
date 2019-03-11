@@ -10,6 +10,7 @@ class Personnage{
         this.width = 20;
         this.level = l;
         this.self = this;
+        this.walking=false;
         
         this.deathEvt = new CustomEvent('charDie', {detail: this.self});
         addEventListener('bombExploded', (e)=>{
@@ -34,6 +35,8 @@ class Personnage{
         let nextBloc = this.level.grille[newY][newX];
 
         if(nextBloc.passable){
+            console.log(x+ " "+y);
+            
             this.oldPosX = this.posX;
             this.oldPosY = this.posY;
             this.posX+=x;
@@ -44,25 +47,43 @@ class Personnage{
     move1(x, y){
         let newX = Math.floor((this.posX+x));
         let newY = Math.floor((this.posY+y));
-        let oldX = this.posX;
-        let oldY = this.posY;
-
         let nextBloc = this.level.grille[newY][newX];
-        let interval;
-        if(nextBloc.passable){
-            interval = setInterval((x,y)=>{
-                if(this.posX!==newX || this.posY!==newY){
-                    this.posX+=(x/1000);
-                    this.posY+=(y/1000);
-                }
-                else{
-                    this.oldPosX=oldX;
-                    this.oldPosY=oldY;
-                    clearInterval(interval);
-                }
-            }, 16);
-        }
-
+        if(!this.walking){ 
+            let oldX = this.posX;
+            let oldY = this.posY;
+            this.walking=true;
+            let interval;
+            if(nextBloc.passable){
+                interval = setInterval(()=>{
+                    if(x<0 || y<0){//on recule
+                        if(Math.ceil(this.posX)===newX && Math.ceil(this.posY)===newY){
+                            this.posX=newX;
+                            this.posY=newY;
+                            this.oldPosX=oldX;
+                            this.oldPosY=oldY;
+                            clearInterval(interval);               
+                        }   
+                        else{
+                            this.posX+=(x/4);
+                            this.posY+=(y/4);  
+                        }
+                    }
+                    else{//on avance
+                        if(Math.floor(this.posX)===newX && Math.floor(this.posY)===newY){
+                            this.posX=newX;
+                            this.posY=newY;
+                            this.oldPosX=oldX;
+                            this.oldPosY=oldY;
+                            clearInterval(interval);               
+                            }   
+                            else{
+                                this.posX+=(x/4);
+                                this.posY+=(y/4);  
+                            }
+                    }
+                }, 16);
+            } 
+        }  
     }
 
     dropBomb(){

@@ -2,7 +2,7 @@ class Bombe extends Objet {
     constructor(x, y, dmg, range, level){
         super(x,y);
         this.dmg = dmg;
-        this.decompteTimer = 3;
+        this.decompteTimer = 4;
         this.decompteExplosion = 1.5;
         this.flash = true;
         this.explosed = false;

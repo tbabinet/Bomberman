@@ -53,7 +53,6 @@ function jsonToLevel(obj) {
     });
     let nv = new Niveau(gridBloc);
     return nv;
-    
 }
 
 

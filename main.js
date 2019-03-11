@@ -1,6 +1,5 @@
 let init = async function () {
     let canvas = document.getElementById("cvn");
-
     let r = readJSon("niveau.json");
     let drawer = new Drawer();
     
@@ -35,13 +34,21 @@ let init = async function () {
         }//lâcher une bombe
         
     });
+    window.addEventListener('keyup', (e)=>{
+        if(e.keyCode==38 ||e.keyCode==40 ||e.keyCode==37 ||e.keyCode==39){
+            c.walking=false;
+        }
+    });
 
     window.addEventListener('charMoved', (evt) => {
-        let cx = evt.detail.posX;
-        let cy = evt.detail.posY;
-        if(l.grille[cy][cx].type===5){
-            console.log("GAGNE !!");
+        if(!c.walking){
+            let cx = evt.detail.posX;
+            let cy = evt.detail.posY;
+            if(l.grille[cy][cx].type===5){
+                console.log("GAGNE !!");
+            }
         }
+        
     });
 
     window.addEventListener('charDie', (evt) => {
