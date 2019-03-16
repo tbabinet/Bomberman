@@ -1,6 +1,6 @@
 class Personnage{
     constructor(l){
-        this.speed = 1; 
+        this.speed = 16; 
         //this.vies = 3;
         this.oldPosX = 1; //utilisé pour n'avoir qu'à redessiner la case sur laquelle on était, plutôt que toute la grille
         this.oldPosY = 1;
@@ -11,6 +11,8 @@ class Personnage{
         this.level = l;
         this.self = this;
         this.walking=false;
+        this.mvtEvent = new CustomEvent('charMoved', {detail: this});
+        
         
         this.deathEvt = new CustomEvent('charDie', {detail: this.self});
         addEventListener('bombExploded', (e)=>{
@@ -28,63 +30,73 @@ class Personnage{
         });
     }
 
-    move(x,y){
-        let newX = Math.floor((this.posX+x));
-        let newY = Math.floor((this.posY+y));
 
-        let nextBloc = this.level.grille[newY][newX];
 
-        if(nextBloc.passable){
-            console.log(x+ " "+y);
-            
-            this.oldPosX = this.posX;
-            this.oldPosY = this.posY;
-            this.posX+=x;
-            this.posY+=y;
-        }
-    }
-
-    move1(x, y){
-        let newX = Math.floor((this.posX+x));
-        let newY = Math.floor((this.posY+y));
-        let nextBloc = this.level.grille[newY][newX];
+    move(x, y){    
         if(!this.walking){ 
-            let oldX = this.posX;
-            let oldY = this.posY;
-            this.walking=true;
-            let interval;
+            
+            
+            let newX = this.posX+x;
+            let newY = this.posY+y;
+            let nextBloc= this.level.grille[newY][newX];
+    
+            //let interval;
             if(nextBloc.passable){
-                interval = setInterval(()=>{
+                this.walking=true;
+                let oldX = this.posX;
+                let oldY = this.posY;
+                //interval = setInterval(()=>{
                     if(x<0 || y<0){//on recule
+
                         if(Math.ceil(this.posX)===newX && Math.ceil(this.posY)===newY){
-                            this.posX=newX;
-                            this.posY=newY;
+                            this.posX=newX
+                            this.posY=newY
                             this.oldPosX=oldX;
                             this.oldPosY=oldY;
-                            clearInterval(interval);               
+                            this.walking=false;
+                            console.log("stop");
+                            
+                            window.dispatchEvent(this.mvtEvent);
+                            
+                            //clearInterval(interval);               
                         }   
                         else{
-                            this.posX+=(x/4);
-                            this.posY+=(y/4);  
+                            this.posX+=(0.1*x);
+                            this.posY+=(0.1*y);  
+                            requestAnimationFrame(move(x,y));
+                            
                         }
                     }
                     else{//on avance
+                        
                         if(Math.floor(this.posX)===newX && Math.floor(this.posY)===newY){
-                            this.posX=newX;
-                            this.posY=newY;
+                            this.posX=newX
+                            this.posY=newY
                             this.oldPosX=oldX;
                             this.oldPosY=oldY;
-                            clearInterval(interval);               
-                            }   
-                            else{
-                                this.posX+=(x/4);
-                                this.posY+=(y/4);  
-                            }
+                            this.walking=false;
+                            window.dispatchEvent(this.mvtEvent);
+                            console.log("stop");
+                            
+                            //clearInterval(interval);                
+                        }   
+                        else{
+                            this.posX+=(0.1*x);
+                            this.posY+=(0.1*y);  
+                            requestAnimationFrame(move(x,y));
+                            
+                        }
                     }
-                }, 16);
+                //}, this.speed);
             } 
         }  
     }
+
+    // move1(x,y){
+    //     if(x<0 || y<0){//on recule
+
+    //     }
+    // }
 
     dropBomb(){
         let bomb = new Bombe(this.posX, this.posY, 2, 2, this.level);

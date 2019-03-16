@@ -1,6 +1,6 @@
 async function readJSon(file)
 {
-    let lvl = new Niveau();
+    //let lvl = new Niveau();
     let p = new Promise(function (success, failure) {
         var xhr = new XMLHttpRequest();
         xhr.addEventListener("readystatechange", (e)=>{
@@ -13,9 +13,10 @@ async function readJSon(file)
          
     });
 
-    lvl = await p.then(function (resp) {
+    let lvl = await p.then(function (resp) {
         return jsonToLevel(JSON.parse(resp));
     });
+
     return lvl;
 }
 
