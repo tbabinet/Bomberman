@@ -8,46 +8,31 @@ let init = async function () {
     
     let bombList = new Array();
 
-    
-
-    // window.addEventListener('keydown', function f (e) {
-    //     if(e.keyCode==38 && c.posY>0){            
-    //         c.mouvement(0, -c.speed);
-    //         window.dispatchEvent(mvt);
-    //     }//Vers le haut
-    //     if(e.keyCode==40 && (canvas.height > c.posY + c.height)){            
-    //         c.mouvement(0,c.speed);
-    //         window.dispatchEvent(mvt);
-    //     }//vers le bas
-    //     if(e.keyCode==37 && c.posX>0){            
-    //         c.mouvement(-c.speed, 0);
-    //         window.dispatchEvent(mvt);
-    //     }//vers la gauche
-    //     if(e.keyCode==39 && (canvas.width > c.posX + c.width)){            
-    //         c.mouvement(c.speed, 0);
-    //         window.dispatchEvent(mvt);
-    //     }//vers la droite
-    //     if(e.keyCode==32){
-    //         bombList.push(c.dropBomb());
-    //     }//lâcher une bombe
-        
-    // });
     window.addEventListener('keydown', function f (e) {
-        if(e.keyCode==38 && c.posY>0){            
-            c.move(0, -1);
+        if(e.keyCode==38 && c.posY>0){      
+            try {
+                console.log(e);
+                
+                c.move(0, -1);
+            } catch (error) {console.log(error);
+             }      
+            
             
         }//Vers le haut
-        if(e.keyCode==40 && (canvas.height > c.posY + c.height)){            
-            c.move(0,1);
-            
+        if(e.keyCode==40 && (canvas.height > c.posY + c.height)){ 
+            try {
+                c.move(0,1);
+            } catch (error) {console.log(error)}             
         }//vers le bas
-        if(e.keyCode==37 && c.posX>0){            
-            c.move(-1, 0);
-            
+        if(e.keyCode==37 && c.posX>0){  
+            try {
+                c.move(-1, 0);
+            } catch (error) {console.log(error)}            
         }//vers la gauche
-        if(e.keyCode==39 && (canvas.width > c.posX + c.width)){            
-            c.move(1, 0);
-            
+        if(e.keyCode==39 && (canvas.width > c.posX + c.width)){   
+            try {
+                c.move(1, 0);
+            } catch (error) {console.log(error)}         
         }//vers la droite
         if(e.keyCode==32){
             bombList.push(c.dropBomb());

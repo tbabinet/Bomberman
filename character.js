@@ -1,6 +1,6 @@
 class Personnage{
     constructor(l){
-        this.speed = 16; 
+        this.speed = 1; 
         //this.vies = 3;
         this.oldPosX = 1; //utilisé pour n'avoir qu'à redessiner la case sur laquelle on était, plutôt que toute la grille
         this.oldPosY = 1;
@@ -34,69 +34,79 @@ class Personnage{
 
     move(x, y){    
         if(!this.walking){ 
-            
-            
             let newX = this.posX+x;
             let newY = this.posY+y;
             let nextBloc= this.level.grille[newY][newX];
     
-            //let interval;
+            let interval;
             if(nextBloc.passable){
                 this.walking=true;
                 let oldX = this.posX;
                 let oldY = this.posY;
-                //interval = setInterval(()=>{
+                interval = setInterval(()=>{
                     if(x<0 || y<0){//on recule
 
                         if(Math.ceil(this.posX)===newX && Math.ceil(this.posY)===newY){
-                            this.posX=newX
-                            this.posY=newY
+                            this.posX=Math.ceil(this.posX);
+                            this.posY=Math.ceil(this.posY)
                             this.oldPosX=oldX;
                             this.oldPosY=oldY;
                             this.walking=false;
                             console.log("stop");
-                            
                             window.dispatchEvent(this.mvtEvent);
-                            
-                            //clearInterval(interval);               
+                            clearInterval(interval);               
                         }   
                         else{
-                            this.posX+=(0.1*x);
-                            this.posY+=(0.1*y);  
-                            requestAnimationFrame(move(x,y));
-                            
+                            this.posX+=(0.1*x*this.speed);
+                            this.posY+=(0.1*y*this.speed);  
                         }
                     }
                     else{//on avance
                         
                         if(Math.floor(this.posX)===newX && Math.floor(this.posY)===newY){
-                            this.posX=newX
-                            this.posY=newY
+                            this.posX=Math.floor(this.posX);
+                            this.posY=Math.floor(this.posY)
                             this.oldPosX=oldX;
                             this.oldPosY=oldY;
                             this.walking=false;
                             window.dispatchEvent(this.mvtEvent);
                             console.log("stop");
                             
-                            //clearInterval(interval);                
+                            clearInterval(interval);                
                         }   
                         else{
-                            this.posX+=(0.1*x);
-                            this.posY+=(0.1*y);  
-                            requestAnimationFrame(move(x,y));
-                            
+                            this.posX+=(0.1*x*this.speed);
+                            this.posY+=(0.1*y*this.speed);  
                         }
                     }
-                //}, this.speed);
+                }, 1000/60);
             } 
         }  
     }
 
-    // move1(x,y){
-    //     if(x<0 || y<0){//on recule
+    move1(x,y){
+        
+        let newX, newY = 0;
+        newX = Math.ceil((this.posX+0.1*x));
+        newY = Math.ceil((this.posY+0.1*y));
+        if(x<0||y<0){
+            
+            newX = Math.floor((this.posX+0.1*x));
+            newY = Math.floor((this.posY+0.1*y));
+        }
 
-    //     }
-    // }
+        let nextBloc = this.level.grille[newY][newX];
+
+        if(nextBloc.passable){
+            console.log(x+ " "+y);
+
+            this.oldPosX = this.posX;
+            this.oldPosY = this.posY;
+            this.posX+=x*0.1;
+            this.posY+=y*0.1;
+        }
+        console.log(this.self);
+    }
 
     dropBomb(){
         let bomb = new Bombe(this.posX, this.posY, 2, 2, this.level);

@@ -13,12 +13,12 @@ class Niveau{
 
         let iRandBloc = Math.floor(Math.random() * Math.floor(this.sol.length)); //le bloc sur lequel on va poser notre objet
         let randBloc = this.sol[iRandBloc];
-        console.log(randBloc);
+        
         
         let objType = Math.floor(Math.random() * Math.floor(1)) + 1; //le type de l'objet
-        let obj = new Objet(randBloc.posX, randBloc.posY, objType);
+        let obj = new Objet(randBloc.posY, randBloc.posX, objType);
 
-        console.log(obj);
+        
         this.objets.push(obj);
         
 

@@ -28,7 +28,7 @@ class Drawer{
                 case 1:
                     this.context.fillStyle='#a4c56d';
                     this.context.fill();
-                    this.context.arc(obj.y*20+10,obj.x*20+10,10,0,2*Math.PI);
+                    this.context.arc(obj.x*20+10,obj.y*20+10,10,0,2*Math.PI);
                     break;
             
                 default:
