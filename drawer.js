@@ -8,10 +8,47 @@ class Drawer{
     }
     
     drawChar(perso){
-        this.context.fillStyle = '#00ff00';
-        this.context.fillRect(perso.posX, perso.posY, perso.width, perso.height);
-        if(perso.step){
+        //this.context.fillStyle = '#00ff00';
+        //this.context.fillRect(perso.posX, perso.posY, perso.width, perso.height);
+        switch (perso.dir) {
 
+            case 'd':       
+                if(perso.stepDown){
+                    this.context.drawImage(this.sprite_sheet, 32, 256, 16, 16, perso.posX, perso.posY, 20, 20); 
+                }
+                else{
+                    this.context.drawImage(this.sprite_sheet, 48, 256, 16, 16, perso.posX, perso.posY, 20, 20);
+                }
+                break;
+            case 'u':
+                if(perso.stepUp){
+                    this.context.drawImage(this.sprite_sheet, 127, 256, 16, 16, perso.posX, perso.posY, 20, 20); 
+                }
+                else{
+                    this.context.drawImage(this.sprite_sheet, 143, 256, 16, 16, perso.posX, perso.posY, 20, 20);
+                }
+                break;
+            case 'r':
+                if(perso.stepLR){
+                    this.context.drawImage(this.sprite_sheet, 80, 256, 16, 16, perso.posX, perso.posY, 20, 20); 
+                }
+                else{
+                    this.context.drawImage(this.sprite_sheet, 112, 256, 16, 16, perso.posX, perso.posY, 20, 20);
+                }
+                break;
+            case 'l':
+                //this.context.save();
+                //this.context.scale(-1,1);
+                if(perso.stepLR){
+                    this.context.drawImage(this.sprite_sheet, 80, 256, 16, 16, perso.posX, perso.posY, 20, 20); 
+                }
+                else{
+                    this.context.drawImage(this.sprite_sheet, 112, 256, 16, 16, perso.posX, perso.posY, 20, 20);
+                }
+                //this.context.restore();
+                break;
+            default:
+                break;
         }
     }
 
@@ -36,20 +73,13 @@ class Drawer{
                 default:
                     break;
             }
-            
         });
     }
 
     drawBloc(bloc, i, j){
         switch (bloc.type) {
             case 0://limites du niveau
-                //if(j==0 || j == 29){//limites haut/bas
-                    //this.context.drawImage(this.sprite_sheet, 160, 272, 15, 15, j*20, i*20, 20, 20);
-                //}
-                //else{
-                    this.context.drawImage(this.sprite_sheet, 160, 288, 16, 16, j*20, i*20, 20, 20);
-                //}
-                //this.context.fillStyle = '#000000';
+                this.context.drawImage(this.sprite_sheet, 160, 288, 16, 16, j*20, i*20, 20, 20);
                 break;
             case 1://sol simple 
                 this.context.drawImage(this.sprite_sheet, 0, 208, 16, 16, j*20, i*20, 20, 20);

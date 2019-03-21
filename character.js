@@ -1,21 +1,28 @@
 class Personnage{
+    /**
+     * 
+     * stepUp,LR,Down: utilisé pour le dessins des sprites (pas gauche/droit)
+     * dir: pour savoir la direction dans laquelle on va (dessin aussi)
+     * stopped : dessin aussi
+     * ghost: activé par un item, permet de passer à travers les murs
+     * 
+     */
     constructor(l){
         this.speed = 1; 
-        //this.vies = 3;
-        this.oldPosX = 1; //utilisé pour n'avoir qu'à redessiner la case sur laquelle on était, plutôt que toute la grille
-        this.oldPosY = 1;
+
         this.posX = 20;
         this.posY = 20;
         
         this.height = 20;
         this.width = 20;
         this.level = l;
-        this.self = this;
-        this.walking=false;
+        this.self = this; 
         this.mvtEvent = new CustomEvent('charMoved', {detail: this});
         this.stepUp=false;
         this.stepLR=false;
         this.stepDown=false;
+        this.dir ='d';
+        this.stopped = true;
         this.ghost = false;
         
         
@@ -37,39 +44,46 @@ class Personnage{
 
 
     move(x,y){
-        let newX, newY = 0;
-        
-        for (let i = 0; i < this.speed; i++) {
-            newX = Math.trunc((this.posX+this.speed*x)/20);
-            newY = Math.trunc((this.posY+this.speed*y)/20);
+        let newX = Math.trunc((this.posX+this.speed*x)/20);
+        let newY = Math.trunc((this.posY+this.speed*y)/20);
 
-            if(x>0||y>0){
-                newX = Math.ceil((this.posX+this.speed*x)/20);
-                newY = Math.ceil((this.posY+this.speed*y)/20);
-            }
+        if(x===1){
+            newX = Math.ceil((this.posX+this.speed*x)/20);
+            this.dir='r';
+            this.stepLR=!this.stepLR;
+        }
+        if(y===1){
+            newY = Math.ceil((this.posY+this.speed*y)/20);
+            this.dir='d';
+            this.stepDown=!this.stepDown;
+        }
+        if(x===-1){
+            this.dir='l';
+            this.stepLR=!this.stepLR;
+        }
+        if(y===-1){
+            this.dir='u';
+            this.stepUp=!this.stepUp;
+        }
 
-            let nextBloc = this.level.grille[newY][newX];
-            if(this.ghost){
-                this.oldPosX = this.posX;
-                this.oldPosY = this.posY;
+        let nextBloc = this.level.grille[newY][newX];
+        if(this.ghost){
+            this.posX+=(20*x);
+            this.posY+=(20*y);
+            window.dispatchEvent(this.mvtEvent);
+        }
+        else{
+            if(nextBloc.passable ){
+
                 this.posX+=(20*x);
                 this.posY+=(20*y);
                 window.dispatchEvent(this.mvtEvent);
             }
-            else{
-                if(nextBloc.passable ){
-                    this.oldPosX = this.posX;
-                    this.oldPosY = this.posY;
-                    this.posX+=(20*x);
-                    this.posY+=(20*y);
-                    window.dispatchEvent(this.mvtEvent);
-                }
-            }     
         }
     }
 
     dropBomb(){
-        let bomb = new Bombe(Math.trunc(this.posX/20), Math.trunc(this.posY), 2, 2, this.level);
+        let bomb = new Bombe(Math.trunc(this.posX/20), Math.trunc(this.posY/20), 2, 2, this.level);
         return bomb;
     }
 
