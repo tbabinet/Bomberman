@@ -11,8 +11,6 @@ let init = async function () {
     window.addEventListener('keydown', function f (e) {
         if(e.keyCode==38 && c.posY>0){      
             try {
-                console.log(e);
-                
                 c.move(0, -1);
             } catch (error) {console.log(error);
              }      
@@ -49,8 +47,8 @@ let init = async function () {
     window.addEventListener('charMoved', (evt) => {
         let c = evt.detail;
         if(!c.walking){
-            let cx = evt.detail.posX;
-            let cy = evt.detail.posY;
+            let cx = Math.trunc(evt.detail.posX/20);
+            let cy = Math.trunc(evt.detail.posY/20);
             if(l.grille[cy][cx].type===5){
                 console.log("GAGNE !!");
             }

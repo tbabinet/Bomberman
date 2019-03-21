@@ -2,15 +2,17 @@ class Drawer{
     constructor(){
         this.canvas = document.getElementById("cvn");
         this.context = this.canvas.getContext("2d");
-        this.img_sol = new Image();
-        this.img_obst_dest = new Image();
-        //this.img_sol.src = "images/sol.jpg";
-        //this.img_obst_dest.src = "images/obst_dest.jpg";
+        this.sprite_sheet = document.getElementById("sprite_sheet");
+        console.log(this.sprite_sheet);
+        
     }
     
     drawChar(perso){
         this.context.fillStyle = '#00ff00';
-        this.context.fillRect(perso.posX*20, perso.posY*20, perso.width, perso.height);
+        this.context.fillRect(perso.posX, perso.posY, perso.width, perso.height);
+        if(perso.step){
+
+        }
     }
 
     drawLevel(level){
@@ -41,27 +43,31 @@ class Drawer{
     drawBloc(bloc, i, j){
         switch (bloc.type) {
             case 0://limites du niveau
-                this.context.fillStyle = '#000000';
+                //if(j==0 || j == 29){//limites haut/bas
+                    //this.context.drawImage(this.sprite_sheet, 160, 272, 15, 15, j*20, i*20, 20, 20);
+                //}
+                //else{
+                    this.context.drawImage(this.sprite_sheet, 160, 288, 16, 16, j*20, i*20, 20, 20);
+                //}
+                //this.context.fillStyle = '#000000';
                 break;
             case 1://sol simple 
-                this.context.fillStyle = '#f0f0f0';
-                //this.context.drawImage(this.img_sol, j*20, i*20);
+                this.context.drawImage(this.sprite_sheet, 0, 208, 16, 16, j*20, i*20, 20, 20);
                 break;
             case 2://obstacle destructible
-                this.context.fillStyle = '#123456';
-                //this.context.drawImage(this.img_obst_dest, j*20, i*20);
+                this.context.drawImage(this.sprite_sheet, 144, 208, 16, 16, j*20, i*20, 20, 20);
                 break;
             case 3://obstacle indestructible
-                this.context.fillStyle = '#ffff00';
+                this.context.drawImage(this.sprite_sheet, 160, 272, 16, 16, j*20, i*20, 20, 20);
                 break;
             case 4://sortie recouverte
-                this.context.fillStyle = '#123456';
+                this.context.drawImage(this.sprite_sheet, 16, 208, 16, 16, j*20, i*20, 20, 20);
+                this.context.drawImage(this.sprite_sheet, 48, 208, 16, 16, j*20, i*20, 20, 20);
                 break;
             case 5://sortie découverte
-                this.context.fillStyle = '#000ff0';
+                this.context.drawImage(this.sprite_sheet, 16, 208, 16, 16, j*20, i*20, 20, 20);
                 break;
         }
-        this.context.fillRect(j*20, i*20, 20, 20);
     }
 
     drawBomb(bomb){

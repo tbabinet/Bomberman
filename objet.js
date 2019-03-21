@@ -15,15 +15,19 @@ class Objet{
 
         addEventListener('charMoved', (evt) => {
             let c = evt.detail;
-            if(true){
-                let cx = evt.detail.posX;
-                let cy = evt.detail.posY;
+            
+                let cx = Math.trunc(evt.detail.posX/20);
+                let cy = Math.trunc(evt.detail.posY/20);
+                console.log(cx, cy);
+            if(this.type==1){    
                 if(cx==this.x && cy==this.y){
-                    c.speed = 2; 
-                    console.log("ramassé objet"+ this.type);
+                    c.ghost = true; 
+                    setTimeout(() => {
+                        c.unGhost();
+                    }, 5000);
+                    
                 }
             }
-            
         });
     }
 }

@@ -4,14 +4,19 @@ class Personnage{
         //this.vies = 3;
         this.oldPosX = 1; //utilisé pour n'avoir qu'à redessiner la case sur laquelle on était, plutôt que toute la grille
         this.oldPosY = 1;
-        this.posX = 1;
-        this.posY = 1;
+        this.posX = 20;
+        this.posY = 20;
+        
         this.height = 20;
         this.width = 20;
         this.level = l;
         this.self = this;
         this.walking=false;
         this.mvtEvent = new CustomEvent('charMoved', {detail: this});
+        this.stepUp=false;
+        this.stepLR=false;
+        this.stepDown=false;
+        this.ghost = false;
         
         
         this.deathEvt = new CustomEvent('charDie', {detail: this.self});
@@ -31,86 +36,60 @@ class Personnage{
     }
 
 
-
-    move(x, y){    
-        if(!this.walking){ 
-            let newX = this.posX+x;
-            let newY = this.posY+y;
-            let nextBloc= this.level.grille[newY][newX];
-    
-            let interval;
-            if(nextBloc.passable){
-                this.walking=true;
-                let oldX = this.posX;
-                let oldY = this.posY;
-                interval = setInterval(()=>{
-                    if(x<0 || y<0){//on recule
-
-                        if(Math.ceil(this.posX)===newX && Math.ceil(this.posY)===newY){
-                            this.posX=Math.ceil(this.posX);
-                            this.posY=Math.ceil(this.posY)
-                            this.oldPosX=oldX;
-                            this.oldPosY=oldY;
-                            this.walking=false;
-                            console.log("stop");
-                            window.dispatchEvent(this.mvtEvent);
-                            clearInterval(interval);               
-                        }   
-                        else{
-                            this.posX+=(0.1*x*this.speed);
-                            this.posY+=(0.1*y*this.speed);  
-                        }
-                    }
-                    else{//on avance
-                        
-                        if(Math.floor(this.posX)===newX && Math.floor(this.posY)===newY){
-                            this.posX=Math.floor(this.posX);
-                            this.posY=Math.floor(this.posY)
-                            this.oldPosX=oldX;
-                            this.oldPosY=oldY;
-                            this.walking=false;
-                            window.dispatchEvent(this.mvtEvent);
-                            console.log("stop");
-                            
-                            clearInterval(interval);                
-                        }   
-                        else{
-                            this.posX+=(0.1*x*this.speed);
-                            this.posY+=(0.1*y*this.speed);  
-                        }
-                    }
-                }, 1000/60);
-            } 
-        }  
-    }
-
-    move1(x,y){
-        
+    move(x,y){
         let newX, newY = 0;
-        newX = Math.ceil((this.posX+0.1*x));
-        newY = Math.ceil((this.posY+0.1*y));
-        if(x<0||y<0){
-            
-            newX = Math.floor((this.posX+0.1*x));
-            newY = Math.floor((this.posY+0.1*y));
+        
+        for (let i = 0; i < this.speed; i++) {
+            newX = Math.trunc((this.posX+this.speed*x)/20);
+            newY = Math.trunc((this.posY+this.speed*y)/20);
+
+            if(x>0||y>0){
+                newX = Math.ceil((this.posX+this.speed*x)/20);
+                newY = Math.ceil((this.posY+this.speed*y)/20);
+            }
+
+            let nextBloc = this.level.grille[newY][newX];
+            if(this.ghost){
+                this.oldPosX = this.posX;
+                this.oldPosY = this.posY;
+                this.posX+=(20*x);
+                this.posY+=(20*y);
+                window.dispatchEvent(this.mvtEvent);
+            }
+            else{
+                if(nextBloc.passable ){
+                    this.oldPosX = this.posX;
+                    this.oldPosY = this.posY;
+                    this.posX+=(20*x);
+                    this.posY+=(20*y);
+                    window.dispatchEvent(this.mvtEvent);
+                }
+            }     
         }
-
-        let nextBloc = this.level.grille[newY][newX];
-
-        if(nextBloc.passable){
-            console.log(x+ " "+y);
-
-            this.oldPosX = this.posX;
-            this.oldPosY = this.posY;
-            this.posX+=x*0.1;
-            this.posY+=y*0.1;
-        }
-        console.log(this.self);
     }
 
     dropBomb(){
-        let bomb = new Bombe(this.posX, this.posY, 2, 2, this.level);
+        let bomb = new Bombe(Math.trunc(this.posX/20), Math.trunc(this.posY), 2, 2, this.level);
         return bomb;
+    }
+
+    unGhost(){
+        this.ghost=false;
+        let cx = Math.trunc(this.posX/20);
+        let cy = Math.trunc(this.posY/20);
+        if(this.level.grille[cy][cx].type!==1){ 
+            let closeX, closeY, norme = 100000;
+            this.level.sol.forEach(tile => {
+                let newNorme = Math.sqrt(Math.pow(cx-tile.posY, 2)+Math.pow(cy-tile.posX,2));
+                if(norme>newNorme){
+                    norme=newNorme;
+                    closeX=tile.posY;
+                    closeY=tile.posX;  
+                }
+            });
+            this.posX=closeX*20;
+            this.posY=closeY*20;
+        }
     }
 
 }
