@@ -8,48 +8,64 @@ class Drawer{
     }
     
     drawChar(perso){
-        //this.context.fillStyle = '#00ff00';
-        //this.context.fillRect(perso.posX, perso.posY, perso.width, perso.height);
+        let sx, sy = 0;
+        let flipped = false;
         switch (perso.dir) {
-
             case 'd':       
                 if(perso.stepDown){
-                    this.context.drawImage(this.sprite_sheet, 32, 256, 16, 16, perso.posX, perso.posY, 20, 20); 
+                    sx=32;
+                    sy=256;
+                    
                 }
                 else{
-                    this.context.drawImage(this.sprite_sheet, 48, 256, 16, 16, perso.posX, perso.posY, 20, 20);
+                    sx=48;
+                    sy=256;
                 }
                 break;
             case 'u':
                 if(perso.stepUp){
-                    this.context.drawImage(this.sprite_sheet, 127, 256, 16, 16, perso.posX, perso.posY, 20, 20); 
+                    sx=127;
+                    sy=256;
                 }
                 else{
-                    this.context.drawImage(this.sprite_sheet, 143, 256, 16, 16, perso.posX, perso.posY, 20, 20);
-                }
+                    sx=143;
+                    sy=256;
+               }
                 break;
-            case 'r':
+            case 'r':       
                 if(perso.stepLR){
-                    this.context.drawImage(this.sprite_sheet, 80, 256, 16, 16, perso.posX, perso.posY, 20, 20); 
+                    sx=80;
+                    sy=256;
                 }
                 else{
-                    this.context.drawImage(this.sprite_sheet, 112, 256, 16, 16, perso.posX, perso.posY, 20, 20);
-                }
+                    sx=112;
+                    sy=256;
+               }
                 break;
             case 'l':
-                //this.context.save();
-                //this.context.scale(-1,1);
+                flipped = true;
+                this.context.save();
+                this.context.scale(-1,1);
                 if(perso.stepLR){
-                    this.context.drawImage(this.sprite_sheet, 80, 256, 16, 16, perso.posX, perso.posY, 20, 20); 
-                }
+                    sx=80;
+                    sy=256;
+               }
                 else{
-                    this.context.drawImage(this.sprite_sheet, 112, 256, 16, 16, perso.posX, perso.posY, 20, 20);
-                }
-                //this.context.restore();
+                    sx=112;
+                    sy=256;
+               }
                 break;
             default:
                 break;
         }
+        if(flipped){
+            this.context.drawImage(this.sprite_sheet, sx, sy, 16, 16, -perso.posX-20, perso.posY, perso.width, perso.height);  
+            this.context.restore();
+        }
+        else{
+            this.context.drawImage(this.sprite_sheet, sx, sy, 16, 16, perso.posX, perso.posY, perso.width, perso.height); 
+        }
+        
     }
 
     drawLevel(level){
@@ -113,7 +129,6 @@ class Drawer{
             this.context.fillRect(bomb.x*20, bomb.y*20, 20, 20);
         }
         else{
-            
             this.context.fillStyle = '#ff8f00';
             for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {
                 this.context.fillRect(i*20, bomb.y*20, 20, 20);
