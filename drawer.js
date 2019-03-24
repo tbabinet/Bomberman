@@ -3,6 +3,7 @@ class Drawer{
         this.canvas = document.getElementById("cvn");
         this.context = this.canvas.getContext("2d");
         this.sprite_sheet = document.getElementById("sprite_sheet");
+        this.explosion_sheet = document.getElementById("explosion_sheet");
         console.log(this.sprite_sheet);
         
     }
@@ -32,7 +33,7 @@ class Drawer{
                     sy=256;
                }
                 break;
-            case 'r':       
+            case 'r':      
                 if(perso.stepLR){
                     sx=80;
                     sy=256;
@@ -58,6 +59,9 @@ class Drawer{
             default:
                 break;
         }
+        if(perso.ghost){
+            this.context.globalAlpha = 0.7;
+        }
         if(flipped){
             this.context.drawImage(this.sprite_sheet, sx, sy, 16, 16, -perso.posX-20, perso.posY, perso.width, perso.height);  
             this.context.restore();
@@ -65,6 +69,7 @@ class Drawer{
         else{
             this.context.drawImage(this.sprite_sheet, sx, sy, 16, 16, perso.posX, perso.posY, perso.width, perso.height); 
         }
+        this.context.globalAlpha = 1.0;
         
     }
 
@@ -117,25 +122,492 @@ class Drawer{
     }
 
     drawBomb(bomb){
-        //console.log("drawBomb");
-        if(!bomb.explosed){  
-
-            if(bomb.flash){ 
-                this.context.fillStyle = '#ffffff';
+        if(!bomb.explosed){
+            let cx;
+            if(bomb.decompteTimer===3){    
+                cx = 64;
             }
-            else{  
-                this.context.fillStyle = '#0f0f0f';
-            }          
-            this.context.fillRect(bomb.x*20, bomb.y*20, 20, 20);
+            if(bomb.decompteTimer===2.5){
+                cx = 80;
+            }
+            if(bomb.decompteTimer===2){
+                cx = 96;
+            }
+            if(bomb.decompteTimer===1.5){
+                cx = 112;
+            }
+            if(bomb.decompteTimer===1){
+                cx = 128;
+            }
+            if(bomb.decompteTimer===0.5){
+                cx = 144; 
+            }
+            this.context.drawImage(this.sprite_sheet, cx, 288, 16, 16, bomb.x*20, bomb.y*20, 20, 20);
         }
-        else{
-            this.context.fillStyle = '#ff8f00';
-            for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {
-                this.context.fillRect(i*20, bomb.y*20, 20, 20);
+        if(bomb.explosed){
+            let cx;
+            if(bomb.decompteExplosion<=1.4){
+                cx = 0;
+                this.context.drawImage(this.explosion_sheet, cx, 0, 48, 48, bomb.x*20, bomb.y*20, 20, 20);
+                switch (bomb.rangeRight) {
+                    case 1:
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        break;
+                    case 2:
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+2)*20, bomb.y*20, 20, 20);
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeLeft) {
+                    case 1:       
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-2)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeUp) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+2)*20 , -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeDown) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-2)*20-20 , bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+            } 
+            if(bomb.decompteExplosions<=1.2){
+                cx = 48;
+                this.context.drawImage(this.explosion_sheet, cx, 0, 48, 48, bomb.x*20, bomb.y*20, 20, 20);
+                switch (bomb.rangeRight) {
+                    case 1:
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        break;
+                    case 2:
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+2)*20, bomb.y*20, 20, 20);
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeLeft) {
+                    case 1:       
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-2)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeUp) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+2)*20 , -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeDown) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-2)*20-20 , bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+            } 
+            if(bomb.decompteExplosion<=1.0){
+                cx = 96;
+                this.context.drawImage(this.explosion_sheet, cx, 0, 48, 48, bomb.x*20, bomb.y*20, 20, 20);
+                switch (bomb.rangeRight) {
+                    case 1:
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        break;
+                    case 2:
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+2)*20, bomb.y*20, 20, 20);
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeLeft) {
+                    case 1:       
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-2)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeUp) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+2)*20 , -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeDown) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-2)*20-20 , bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+            }  
+            if(bomb.decompteExplosion<=0.8){
+                cx = 144;
+                this.context.drawImage(this.explosion_sheet, cx, 0, 48, 48, bomb.x*20, bomb.y*20, 20, 20);
+                switch (bomb.rangeRight) {
+                    case 1:
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        break;
+                    case 2:
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+2)*20, bomb.y*20, 20, 20);
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeLeft) {
+                    case 1:       
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-2)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeUp) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+2)*20 , -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeDown) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-2)*20-20 , bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+            } 
+            if(bomb.decompteExplosion<=0.6){
+                cx = 192
+                this.context.drawImage(this.explosion_sheet, cx, 0, 48, 48, bomb.x*20, bomb.y*20, 20, 20);
+                switch (bomb.rangeRight) {
+                    case 1:
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        break;
+                    case 2:
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+2)*20, bomb.y*20, 20, 20);
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeLeft) {
+                    case 1:       
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-2)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeUp) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+2)*20 , -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeDown) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-2)*20-20 , bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
             }
-            for (let i = bomb.y - bomb.rangeUp; i <= bomb.y + bomb.rangeDown; i++) {
-                this.context.fillRect(bomb.x*20, i*20, 20, 20);
-            }
+            if(bomb.decompteExplosion<=0.4){
+                cx = 240
+                this.context.drawImage(this.explosion_sheet, cx, 0, 48, 48, bomb.x*20, bomb.y*20, 20, 20);
+                switch (bomb.rangeRight) {
+                    case 1:
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        break;
+                    case 2:
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+2)*20, bomb.y*20, 20, 20);
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeLeft) {
+                    case 1:       
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-2)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeUp) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+2)*20 , -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeDown) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-2)*20-20 , bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+            }    
+            if(bomb.decompteExplosion<=0.2){
+                cx = 288
+                this.context.drawImage(this.explosion_sheet, cx, 0, 48, 48, bomb.x*20, bomb.y*20, 20, 20);
+                switch (bomb.rangeRight) {
+                    case 1:
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        break;
+                    case 2:
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.x+1)*20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.x+2)*20, bomb.y*20, 20, 20);
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeLeft) {
+                    case 1:       
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.scale(-1,1);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.x-1)*20-20, bomb.y*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.x-2)*20-20, bomb.y*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeUp) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+2)*20 , -bomb.x*20-20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+                switch (bomb.rangeDown) {
+                    case 1: 
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    case 2:
+                        this.context.save();
+                        this.context.rotate(-Math.PI/2);
+                        this.context.drawImage(this.explosion_sheet, cx, 48, 48, 43, -(bomb.y-1)*20-20, bomb.x*20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, -(bomb.y-2)*20-20 , bomb.x*20, 20, 20);
+                        this.context.restore();
+                        break;
+                    default:
+                        break;
+                }
+            }        
         }
     }
     

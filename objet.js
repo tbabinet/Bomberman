@@ -16,9 +16,8 @@ class Objet{
         addEventListener('charMoved', (evt) => {
             let c = evt.detail;
             
-                let cx = Math.trunc(evt.detail.posX/20);
-                let cy = Math.trunc(evt.detail.posY/20);
-                console.log(cx, cy);
+            let cx = Math.trunc(evt.detail.posX/20);
+            let cy = Math.trunc(evt.detail.posY/20);
             if(this.type==1){    
                 if(cx==this.x && cy==this.y){
                     c.ghost = true; 

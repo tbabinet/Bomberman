@@ -2,8 +2,9 @@ class Bombe extends Objet {
     constructor(x, y, dmg, range, level){
         super(x,y);
         this.dmg = dmg;
-        this.decompteTimer = 4;
-        this.decompteExplosion = 1.5;
+        this.decompteTimer = 3;
+        this.decompteExplosion = 1.4;
+        //this.decompteExplosion = 10000;
         this.flash = true;
         this.explosed = false;
         this.level = level;
@@ -49,25 +50,28 @@ class Bombe extends Objet {
             }
         }
     
-        let interval;
-
-        interval = setInterval(()=>{
-            if(this.decompteTimer>0){
-                this.decompteTimer-=0.5;          
-                this.flash=(!this.flash);    
+        let intervalTimer;
+        let intervalExplosion;
+        intervalTimer = setInterval(()=>{
+            if(this.decompteTimer>0.5){
+                this.decompteTimer-=0.5;           
             }
             else{
-                if(!this.explosed){
-                    this.explosed=true;
-                    window.dispatchEvent(this.evtExplosion);
-                }            
-                if(this.decompteExplosion>0){
-                    this.decompteExplosion-=0.5
-                    window.dispatchEvent(this.evtExplosion);
-                }
-                else{
-                    clearInterval(interval);
-                }
+                window.dispatchEvent(this.evtExplosion);
+                intervalExplosion = setInterval(()=>{
+                    if(!this.explosed){
+                        this.explosed=true;
+                        window.dispatchEvent(this.evtExplosion);
+                    }            
+                    if(this.decompteExplosion>0){
+                        this.decompteExplosion-=0.2
+                        window.dispatchEvent(this.evtExplosion);
+                    }
+                    else{
+                        clearInterval(intervalExplosion);
+                    }
+                }, 200);
+                clearInterval(intervalTimer);
             }
         },500);
     }
