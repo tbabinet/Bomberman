@@ -11,54 +11,84 @@ class Drawer{
     drawChar(perso){
         let sx, sy = 0;
         let flipped = false;
-        switch (perso.dir) {
-            case 'd':       
-                if(perso.stepDown){
-                    sx=32;
-                    sy=256;
-                    
+
+        if(perso.moving){
+            switch (perso.dir) {
+                case 'd':       
+                    if(perso.stepDown){
+                        sx=32;
+                        sy=256;
+                        
+                    }
+                    else{
+                        sx=48;
+                        sy=256;
+                    }
+                    break;
+                case 'u':
+                    if(perso.stepUp){
+                        sx=127;
+                        sy=256;
+                    }
+                    else{
+                        sx=143;
+                        sy=256;
                 }
-                else{
-                    sx=48;
-                    sy=256;
+                    break;
+                case 'r':      
+                    if(perso.stepLR){
+                        sx=80;
+                        sy=256;
+                    }
+                    else{
+                        sx=112;
+                        sy=256;
                 }
-                break;
-            case 'u':
-                if(perso.stepUp){
-                    sx=127;
-                    sy=256;
+                    break;
+                case 'l':
+                    flipped = true;
+                    this.context.save();
+                    this.context.scale(-1,1);
+                    if(perso.stepLR){
+                        sx=80;
+                        sy=256;
                 }
-                else{
-                    sx=143;
-                    sy=256;
-               }
-                break;
-            case 'r':      
-                if(perso.stepLR){
-                    sx=80;
-                    sy=256;
+                    else{
+                        sx=112;
+                        sy=256;
                 }
-                else{
-                    sx=112;
-                    sy=256;
-               }
-                break;
-            case 'l':
-                flipped = true;
-                this.context.save();
-                this.context.scale(-1,1);
-                if(perso.stepLR){
-                    sx=80;
-                    sy=256;
-               }
-                else{
-                    sx=112;
-                    sy=256;
-               }
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
+            }
         }
+        else{
+            switch (perso.dir) {
+                case 'r':
+                    sx = 64;
+                    sy = 256;
+                    break;
+                case 'l':
+                    flipped = true;
+                    this.context.save();
+                    this.context.scale(-1,1);
+                    sx = 64;
+                    sy = 256;
+                    break;
+                case 'u':  
+                    sx = 0;
+                    sy = 256; 
+                    break;
+                case 'd':
+                    sx = 16;
+                    sy = 256; 
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        
         if(perso.ghost){
             this.context.globalAlpha = 0.7;
         }
@@ -84,8 +114,9 @@ class Drawer{
             i++;
         });
         level.objets.forEach(obj=>{
-            switch (obj.type) {
-                case 1:
+            
+            switch (obj.constructor.name) {
+                case "Ghost":
                     this.context.fillStyle='#a4c56d';
                     this.context.fill();
                     this.context.arc(obj.x*20+10,obj.y*20+10,10,0,2*Math.PI);

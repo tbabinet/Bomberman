@@ -7,26 +7,13 @@ class Objet{
      * 2 => possibilité de passer à travers les obstacles
      * 3 =>invincibilité
      */
-    constructor(x, y, type){
+    constructor(x, y){
         this.x = x;
         this.y = y;
-        this.type = type;
-        console.log(this)
+        this.usedEvt = new CustomEvent('objectUsed', {detail: this});
+        this.used = false;
+        
 
-        addEventListener('charMoved', (evt) => {
-            let c = evt.detail;
-            
-            let cx = Math.trunc(evt.detail.posX/20);
-            let cy = Math.trunc(evt.detail.posY/20);
-            if(this.type==1){    
-                if(cx==this.x && cy==this.y){
-                    c.ghost = true; 
-                    setTimeout(() => {
-                        c.unGhost();
-                    }, 5000);
-                    
-                }
-            }
-        });
     }
 }
+

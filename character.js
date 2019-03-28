@@ -22,11 +22,10 @@ class Personnage{
         this.stepLR=false;
         this.stepDown=false;
         this.dir ='d';
-        this.stopped = true;
+        this.moving = true;
         this.ghost = false;
         
-        
-        this.deathEvt = new CustomEvent('charDie', {detail: this.self});
+        this.deathEvt = new CustomEvent('charDie', {detail: this});
         addEventListener('bombExploded', (e)=>{
             let bomb = e.detail;
             for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {

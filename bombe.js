@@ -15,6 +15,7 @@ class Bombe extends Objet {
         this.self = this;
         this.evtExplosion = new CustomEvent('bombExploded', {detail: this.self});
         
+        
         /* 
         On détermine le rayon de l'explosion à gauche/droite et en haut/bas
 

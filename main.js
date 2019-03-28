@@ -5,30 +5,34 @@ let init = async function () {
 
     let l = await r;
     let c = new Personnage(l);
+    let fps = 0;
     
     let bombList = new Array();
+    let showFPS = false;
 
-    window.addEventListener('keydown', function f (e) {
+    window.addEventListener('keydown', (e)=>{
         if(e.keyCode==38 && c.posY>0){      
             try {
+                c.moving = true;
                 c.move(0, -1);
             } catch (error) {console.log(error);
              }      
-            
-            
         }//Vers le haut
         if(e.keyCode==40 && (canvas.height > c.posY + c.height)){ 
             try {
+                c.moving = true;
                 c.move(0,1);
             } catch (error) {console.log(error)}             
         }//vers le bas
         if(e.keyCode==37 && c.posX>0){  
             try {
+                c.moving = true;
                 c.move(-1, 0);
             } catch (error) {console.log(error)}            
         }//vers la gauche
         if(e.keyCode==39 && (canvas.width > c.posX + c.width)){   
             try {
+                c.moving = true;
                 c.move(1, 0);
             } catch (error) {console.log(error)}         
         }//vers la droite
@@ -38,9 +42,9 @@ let init = async function () {
         
     });
 
-    window.addEventListener('keyup', (e)=>{
-        if(e.keyCode==38 ||e.keyCode==40 ||e.keyCode==37 ||e.keyCode==39){
-            c.walking=false;
+    window.addEventListener("keyup", (e)=>{
+        if(e.keyCode===38 ||e.keyCode===40 ||e.keyCode===39 ||e.keyCode===37){
+            c.moving = false;
         }
     });
 
@@ -70,11 +74,34 @@ let init = async function () {
         bombList.forEach(bomb =>{        
             drawer.drawBomb(bomb);
         });
+        fps++;
         requestAnimationFrame(draw);
     }
 
     window.requestAnimationFrame(draw)
+    window.setInterval(()=>{ 
+        if(showFPS){
+            document.getElementById('infodebug').innerHTML="Images par seconde : "+fps;
+        }
+        fps=0;
+    },1000);
+
+    document.getElementById('fpsbox').addEventListener('change',()=>{
+            showFPS= !(showFPS);
+            if(showFPS){
+                document.getElementById("infodebug").style.display = 'block' ;
+            }
+            else{
+                console.log('hidden');
+                
+                document.getElementById("infodebug").style.display = 'none';
+            }
+    });
+        
+        
         
 }
+
+
 
 window.addEventListener("load", init);
