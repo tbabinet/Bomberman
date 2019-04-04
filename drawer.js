@@ -4,6 +4,7 @@ class Drawer{
         this.context = this.canvas.getContext("2d");
         this.sprite_sheet = document.getElementById("sprite_sheet");
         this.explosion_sheet = document.getElementById("explosion_sheet");
+        this.ghost_sheet = document.getElementById("ghost_sheet");
         console.log(this.sprite_sheet);
         
     }
@@ -117,9 +118,13 @@ class Drawer{
             
             switch (obj.constructor.name) {
                 case "Ghost":
-                    this.context.fillStyle='#a4c56d';
-                    this.context.fill();
-                    this.context.arc(obj.x*20+10,obj.y*20+10,10,0,2*Math.PI);
+                    let shift = obj.draw_state*16;
+                    this.context.drawImage(this.ghost_sheet, shift,0, 16,16, obj.x*20, obj.y*20,16,16);
+                    
+                    
+                    // this.context.fillStyle='#a4c56d';
+                    // this.context.fill();
+                    // this.context.arc(obj.x*20+10,obj.y*20+10,10,0,2*Math.PI);
                     break;
             
                 default:

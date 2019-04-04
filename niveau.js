@@ -12,9 +12,7 @@ class Niveau{
         });
 
         addEventListener("objectUsed", (e)=>{
-            this.objets = this.objets.filter(b=>b!=e.detail);
-            console.log(this.objets);
-            
+            this.objets = this.objets.filter(b=>b!=e.detail);    
         });
 
         let iRandBloc = Math.floor(Math.random() * Math.floor(this.sol.length)); //le bloc sur lequel on va poser notre objet
@@ -26,6 +24,8 @@ class Niveau{
             case 1:
                 let obj = new Ghost(randBloc.posY, randBloc.posX);
                 this.objets.push(obj);
+                console.log(obj);
+                
                 break;
         
             default:
