@@ -1,14 +1,29 @@
 let init = async function () {
-    let canvas = document.getElementById("cvn");
+    
     let r = readJSon("niveau.json");
+    l = await r;
+    c = new Personnage(l);
+    let bombList = Array();
+    let socket = io('http://localhost');
+    
+    socket.on('init', (nb_player, data)=>{
+        //if(nb_player===1){
+            console.log("player "+nb_player);
+            console.log("data :", data);
+            gameData = {level: l, player: c};
+            console.log("emit", gameData);
+            socket.emit('initGame', "initgame");
+            //socket.emit('initGame', {data:gameData});
+            
+            
+        //}
+    });
+
+
+    let canvas = document.getElementById("cvn");
     let drawer = new Drawer();
 
-    let l = await r;
-    let c = new Personnage(l);
-    let fps = 0;
     
-    let bombList = new Array();
-    let showFPS = false;
 
     window.addEventListener('keydown', (e)=>{
         if(e.keyCode==38 && c.posY>0){      
@@ -36,9 +51,12 @@ let init = async function () {
                 c.move(1, 0);
             } catch (error) {console.log(error)}         
         }//vers la droite
-        if(e.keyCode==32){
-            bombList.push(c.dropBomb());
-        }//lâcher une bombe
+        // if(e.keyCode==32){
+        //     if(c.slingshot){
+        //         bombList.push(c.dropBomb(c.posX, c.posY));
+        //     }
+            
+        // }//lâcher une bombe
         
     });
 
@@ -46,6 +64,9 @@ let init = async function () {
         if(e.keyCode===38 ||e.keyCode===40 ||e.keyCode===39 ||e.keyCode===37){
             c.moving = false;
         }
+        if(e.keyCode==32){
+            bombList.push(c.dropBomb(c.posX, c.posY));
+        }//lâcher une bombe
     });
 
     window.addEventListener('charMoved', (evt) => {
@@ -62,10 +83,10 @@ let init = async function () {
 
     window.addEventListener('charDie', (evt) => {
         console.log("PERDU !");
-        //window.removeEventListener('keydown');
     });
 
-    
+    let fps = 0;
+    let showFPS = false;
     function draw() {
         bombList = bombList.filter(b=>b.decompteExplosion>0);
         c.level = l;
@@ -97,11 +118,6 @@ let init = async function () {
                 document.getElementById("infodebug").style.display = 'none';
             }
     });
-        
-        
-        
 }
-
-
 
 window.addEventListener("load", init);

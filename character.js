@@ -24,21 +24,25 @@ class Personnage{
         this.dir ='d';
         this.moving = true;
         this.ghost = false;
-        
+        //this.slingshot = false;
+        this.bombType = 0;
         this.deathEvt = new CustomEvent('charDie', {detail: this});
         addEventListener('bombExploded', (e)=>{
             let bomb = e.detail;
+                
             for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {
-                if(this.posX==i && this.posY==bomb.y){
+                if(this.posX/20==i && this.posY/20==bomb.y){
                     window.dispatchEvent(this.deathEvt);
                 }
             }
             for (let j = bomb.y - bomb.rangeUp; j <= bomb.y + bomb.rangeDown; j++) {
-                if(this.posY==j && this.posX==bomb.x){
+                if(this.posY/20==j && this.posX/20==bomb.x){
                     window.dispatchEvent(this.deathEvt);
                 }
             }
         });
+
+        
     }
 
 
@@ -81,9 +85,9 @@ class Personnage{
         }
     }
 
-    dropBomb(){
-        let bomb = new Bombe(Math.trunc(this.posX/20), Math.trunc(this.posY/20), 2, 2, this.level);
-        return bomb;
+    dropBomb(x, y){
+        let bomb = new Bombe(Math.trunc(x/20), Math.trunc(y/20), 2, 2, this.level, this.bombType);
+        return bomb; 
     }
 
     unGhost(){
@@ -104,5 +108,9 @@ class Personnage{
             this.posY=closeY*20;
         }
     }
+
+    // dropSlingshot(){
+    //     this.slingshot = false;
+    // }
 
 }

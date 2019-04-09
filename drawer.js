@@ -5,7 +5,7 @@ class Drawer{
         this.sprite_sheet = document.getElementById("sprite_sheet");
         this.explosion_sheet = document.getElementById("explosion_sheet");
         this.ghost_sheet = document.getElementById("ghost_sheet");
-        console.log(this.sprite_sheet);
+        this.slingshot_sheet = document.getElementById("slingshot_sheet");
         
     }
     
@@ -118,15 +118,15 @@ class Drawer{
             
             switch (obj.constructor.name) {
                 case "Ghost":
-                    let shift = obj.draw_state*16;
-                    this.context.drawImage(this.ghost_sheet, shift,0, 16,16, obj.x*20, obj.y*20,16,16);
                     
-                    
-                    // this.context.fillStyle='#a4c56d';
-                    // this.context.fill();
-                    // this.context.arc(obj.x*20+10,obj.y*20+10,10,0,2*Math.PI);
+                    this.context.drawImage(this.ghost_sheet, obj.draw_state*16,0, 16,16, obj.x*20, obj.y*20,16,16);
                     break;
-            
+                case "Slingshot":
+                    this.context.drawImage(this.slingshot_sheet, 0,0, 32,48, obj.x*20, obj.y*20,16,16);
+                    break;
+                case "BigBomb":
+                    this.context.drawImage(this.sprite_sheet, 176,239+obj.draw_state*16, 16,16, obj.x*20, obj.y*20,16,16);
+                    break; 
                 default:
                     break;
             }
