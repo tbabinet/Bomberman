@@ -23,9 +23,9 @@ const MIME_TYPES = {
 
 app.listen(80);
 let nb_player = 0;
-let l;
+let lvl;
 let bombList = Array();
-let listChars = Array();
+let listSocket = {};
 
 function handler (req, res) {
     serve_static_file(req, res, ".", req.url);
@@ -34,29 +34,32 @@ function handler (req, res) {
 io.on('connection', function(socket){
     nb_player++;
     if(nb_player===1){
-        socket.emit('init', nb_player, {});
+        socket.emit('init', nb_player);
+    }
+    if(nb_player===2){
+
+        socket.emit('init', {nb:nb_player, x:760, y:20});
     }
     
     console.log('a player connected');
     console.log(nb_player + " joueurs connectés");
 
-    io.on('initGame', function(gameData){
-        // l = gameData.level;
-        // listChars.push(gameData.player);
-    
-        console.log("gameData");
-        //console.log(listChars); 
+    socket.on('initGame', function(gameData){
+        //lvl = gameData.level;
+        //listChars.push(gameData.player);
+        
+        console.log("gameData", gameData);
+        
     });
 
-});
+    socket.on('disconnect', function () {
+        nb_player--;
+        console.log('a player disconnected');
+        console.log(nb_player + " connectés");
+        console.log(socket.id);
+        
+    });
 
-
-
-io.on('disconnect', function(socket){
-    nb_player--;
-    socket.broadcast('init', nb_player);
-    console.log('a player diconnected');
-    console.log(nb_player + " connectés");
 });
 
 
@@ -65,7 +68,7 @@ function serve_static_file(req, resp, base, file) {
 
     fs.readFile(fullpath,(err, dt)=>{
         if(err){
-            //console.log(err);   
+            console.log(err);   
             return;
         }
         let ext = path.extname(fullpath);  

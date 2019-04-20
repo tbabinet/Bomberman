@@ -1,28 +1,27 @@
 let init = async function () {
     
-    let r = readJSon("niveau.json");
+    let r = readJSon("niveau1-multi.json");
     l = await r;
     c = new Personnage(l);
     let bombList = Array();
-    let socket = io('http://localhost');
+    let socket = io('http://localhost/');
     
     socket.on('init', (nb_player, data)=>{
-        //if(nb_player===1){
+        if(nb_player===1){
             console.log("player "+nb_player);
             console.log("data :", data);
-            gameData = {level: l, player: c};
-            console.log("emit", gameData);
-            socket.emit('initGame', "initgame");
-            //socket.emit('initGame', {data:gameData});
+            gameData = {playerX : c.posX, playerY: c.posY};
+            socket.emit('initGame', {data:gameData});
             
-            
-        //}
+        }
     });
+
+
 
 
     let canvas = document.getElementById("cvn");
     let drawer = new Drawer();
-
+    
     
 
     window.addEventListener('keydown', (e)=>{
@@ -30,6 +29,9 @@ let init = async function () {
             try {
                 c.moving = true;
                 c.move(0, -1);
+                gameData = {player1X : c.posX, player1Y: c.posY};
+                socket.emit('player_moved', {data:gameData});
+            
             } catch (error) {console.log(error);
              }      
         }//Vers le haut
@@ -37,27 +39,26 @@ let init = async function () {
             try {
                 c.moving = true;
                 c.move(0,1);
+                gameData = {player1X : c.posX, player1Y: c.posY};
+                socket.emit('player_moved', {data:gameData});
             } catch (error) {console.log(error)}             
         }//vers le bas
         if(e.keyCode==37 && c.posX>0){  
             try {
                 c.moving = true;
                 c.move(-1, 0);
+                gameData = {player1X : c.posX, player1Y: c.posY};
+                socket.emit('player_moved', {data:gameData});
             } catch (error) {console.log(error)}            
         }//vers la gauche
         if(e.keyCode==39 && (canvas.width > c.posX + c.width)){   
             try {
                 c.moving = true;
                 c.move(1, 0);
+                gameData = {player1X : c.posX, player1Y: c.posY};
+                socket.emit('player_moved', {data:gameData});
             } catch (error) {console.log(error)}         
-        }//vers la droite
-        // if(e.keyCode==32){
-        //     if(c.slingshot){
-        //         bombList.push(c.dropBomb(c.posX, c.posY));
-        //     }
-            
-        // }//lâcher une bombe
-        
+        }//vers la droite    
     });
 
     window.addEventListener("keyup", (e)=>{
