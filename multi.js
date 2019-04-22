@@ -1,19 +1,33 @@
 let init = async function () {
     
     let r = readJSon("niveau1-multi.json");
-    l = await r;
-    c = new Personnage(l);
+    let l = await r;
+    let listPlayers = new Array();
+    let c = new Personnage(l);
+    
     let bombList = Array();
     let socket = io('http://localhost/');
     
-    socket.on('init', (nb_player, data)=>{
-        if(nb_player===1){
-            console.log("player "+nb_player);
-            console.log("data :", data);
-            gameData = {playerX : c.posX, playerY: c.posY};
-            socket.emit('initGame', {data:gameData});
-            
+    socket.on('init', (data)=>{
+        // if(data.nb===1){
+        //     console.log("player "+nb_player);
+        //     console.log("data :", data);
+        //     socket.emit('initGame', {data:gameData});
+        // }
+        if(data.nb>1){
+            c.posX=data.x;
+            c.posY=data.y;
         }
+    });
+
+    socket.on('player_connected', (data)=>{
+        let char = new Personnage(l);
+        char.posX = data.x;
+        char.posY = data.y;
+        listPlayers[data.id] = char;
+        console.log("player connected");
+        
+
     });
 
 
@@ -93,6 +107,9 @@ let init = async function () {
         c.level = l;
         drawer.drawLevel(l);
         drawer.drawChar(c);
+        listPlayers.forEach(id=>{
+            drawer.drawChar(listPlayers[id])
+        });
         bombList.forEach(bomb =>{        
             drawer.drawBomb(bomb);
         });
