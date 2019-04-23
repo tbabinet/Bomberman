@@ -1,7 +1,7 @@
 let init = async function () {
     
     let canvas = document.getElementById("cvn");
-    let r = readJSon("niveau3.json");
+    let r = readJSon("niveau1-solo.json");
     let drawer = new Drawer();
 
     let l = await r;

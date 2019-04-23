@@ -21,10 +21,9 @@ class Niveau{
         /**
          * type :
          * 0 => ghost
-         * 1 => lance pierre, permet de lancer sa bombe jusqu'à 3 cases plus loin
-         * 2 => bombe passant à travers les obstacles
+         * 1 => bombe passant à travers les obstacles
          */
-        let objType = Math.floor(Math.random() * 3); //le type de l'objet
+        let objType = Math.floor(Math.random() * 2); //le type de l'objet
         console.log(objType);
         let obj;
         switch (objType) {
@@ -33,11 +32,6 @@ class Niveau{
                 this.objets.push(obj);              
                 break;
             case 1:
-                obj = new Slingshot(randBloc.posY, randBloc.posX);
-                this.objets.push(obj);
-                break;
-
-            case 2:
                 obj = new BigBomb(randBloc.posY, randBloc.posX);
                 this.objets.push(obj);
                 break;

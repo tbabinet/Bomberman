@@ -118,12 +118,8 @@ class Drawer{
             
             switch (obj.constructor.name) {
                 case "Ghost":
-                    
                     this.context.drawImage(this.ghost_sheet, obj.draw_state*16,0, 16,16, obj.x*20, obj.y*20,16,16);
-                    break;
-                case "Slingshot":
-                    this.context.drawImage(this.slingshot_sheet, 0,0, 32,48, obj.x*20, obj.y*20,16,16);
-                    break;
+                    break;s
                 case "BigBomb":
                     this.context.drawImage(this.sprite_sheet, 176,239+obj.draw_state*16, 16,16, obj.x*20, obj.y*20,16,16);
                     break; 
@@ -213,7 +209,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeUp) {
+                switch (bomb.rangeDown) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(Math.PI/2);
@@ -230,7 +226,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeDown) {
+                switch (bomb.rangeUp) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(-Math.PI/2);
@@ -279,7 +275,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeUp) {
+                switch (bomb.rangeDown) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(Math.PI/2);
@@ -296,7 +292,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeDown) {
+                switch (bomb.rangeUp) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(-Math.PI/2);
@@ -345,7 +341,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeUp) {
+                switch (bomb.rangeDown) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(Math.PI/2);
@@ -362,7 +358,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeDown) {
+                switch (bomb.rangeUp) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(-Math.PI/2);
@@ -411,7 +407,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeUp) {
+                switch (bomb.rangeDown) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(Math.PI/2);
@@ -428,7 +424,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeDown) {
+                switch (bomb.rangeUp) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(-Math.PI/2);
@@ -477,11 +473,11 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeUp) {
+                switch (bomb.rangeDown) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(Math.PI/2);
-                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+1)*20, -bomb.x*20-20, 20, 20);
+                        this.context.drawImage(this.explosion_sheet, cx, 91, 48, 43, (bomb.y+2)*20, -bomb.x*20-20, 20, 20);
                         this.context.restore();
                         break;
                     case 2:
@@ -494,7 +490,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeDown) {
+                switch (bomb.rangeUp) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(-Math.PI/2);
@@ -543,7 +539,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeUp) {
+                switch (bomb.rangeDown) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(Math.PI/2);
@@ -560,7 +556,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeDown) {
+                switch (bomb.rangeUp) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(-Math.PI/2);
@@ -609,7 +605,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeUp) {
+                switch (bomb.rangeDown) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(Math.PI/2);
@@ -626,7 +622,7 @@ class Drawer{
                     default:
                         break;
                 }
-                switch (bomb.rangeDown) {
+                switch (bomb.rangeUp) {
                     case 1: 
                         this.context.save();
                         this.context.rotate(-Math.PI/2);
