@@ -1,4 +1,10 @@
 class BigBomb extends Objet{
+    /**
+     * représentation de l'objet bigbomg permettant de poser des bombs dont l'explosion
+     * est toujours de rayon 2
+     * @param {position en x de l'objet} x 
+     * @param {position en y de l'objet} y 
+     */
     constructor(x,y){
         super(x,y);
         addEventListener('charMoved', this.handler.bind(this));  
@@ -13,6 +19,14 @@ class BigBomb extends Objet{
         }, 500); 
     }
     
+
+    /**
+     * A chaque fois qu'un personnage se déplace, il émet un evt "charMoved"
+     * On va, à chaque fois, vérifier si le personnage n'atterrit pas sur 
+     * l'objet. Si oui, il active l'objet (il est donc utilisé), et reçoit
+     * les propriétés en conséquences.
+     * @param {l'évènement traité par le handler} evt 
+     */
     handler(evt) {
         
         let c = evt.detail;

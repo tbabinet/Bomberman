@@ -1,4 +1,7 @@
 class Drawer{
+    /**
+     * classe utilisé pour le dessin
+     */
     constructor(){
         this.canvas = document.getElementById("cvn");
         this.context = this.canvas.getContext("2d");
@@ -6,9 +9,14 @@ class Drawer{
         this.explosion_sheet = document.getElementById("explosion_sheet");
         this.ghost_sheet = document.getElementById("ghost_sheet");
         this.slingshot_sheet = document.getElementById("slingshot_sheet");
-        
     }
     
+    /**
+     * fonction appelée lors du dessin d'un personnage,
+     * on switch sur la direction du personnage, puis sur si il fait un pas 
+     * à gauche ou à droite, et enfin sur si il a l'effet ghost ou non
+     * @param {le perso à dessiner} perso 
+     */
     drawChar(perso){
         let sx, sy = 0;
         let flipped = false;
@@ -104,6 +112,10 @@ class Drawer{
         
     }
 
+    /**
+     * fonction appelé lors du dessin d'un niveau
+     * @param {le niveau à dessiner} level 
+     */
     drawLevel(level){
         let i = 0;
         level.grille.forEach(line => {
@@ -115,7 +127,6 @@ class Drawer{
             i++;
         });
         level.objets.forEach(obj=>{
-            
             switch (obj.constructor.name) {
                 case "Ghost":
                     this.context.drawImage(this.ghost_sheet, obj.draw_state*16,0, 16,16, obj.x*20, obj.y*20,16,16);
@@ -129,6 +140,15 @@ class Drawer{
         });
     }
 
+    /**
+     * fonction appelée lors du dessin d'un bloc.
+     * les bloc étant stockés dans un tableau, et parcourus à l'aide d'une double
+     * boucle, la première boucle (i) donne la position en y d'un bloc, et la deuxième (j) sa 
+     * position en x
+     * @param {le bloc à dessiner} bloc 
+     * @param {le coordonnée en y du bloc} i 
+     * @param {la coordonnée en x du bloc} j 
+     */
     drawBloc(bloc, i, j){
         switch (bloc.type) {
             case 0://limites du niveau

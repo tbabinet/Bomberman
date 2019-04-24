@@ -1,10 +1,18 @@
 class Bombe extends Objet {
+    /**
+     * représentation d'une bombe déposée par un joueur
+     * @param {la position en x de la bombe} x 
+     * @param {la position en y de la bombe} y 
+     * @param {les dégats de la bombe} dmg 
+     * @param {la portée de la bombe} range 
+     * @param {le niveau auquel la bombe appartient} level 
+     * @param {le type de la bombe} type 
+     */
     constructor(x, y, dmg, range, level, type){
         super(x,y);
         this.dmg = dmg;
         this.decompteTimer = 3;
         this.decompteExplosion = 1.4;
-        //this.decompteExplosion = 10000;
         this.flash = true;
         this.explosed = false;
         this.level = level;
@@ -16,9 +24,8 @@ class Bombe extends Objet {
         this.evtExplosion = new CustomEvent('bombExploded', {detail: this.self});
         this.type = type;
         
-        /* 
+        /** 
         On détermine le rayon de l'explosion à gauche/droite et en haut/bas
-
         */
 
         if(type==0){//explosion stoppée par les obstacles
@@ -54,7 +61,10 @@ class Bombe extends Objet {
             }
         }
         
-    
+        /**
+         * Initialisation du compte à rebours de la bombe (3s).
+         * Une fois que celle-ci à explosé, l'explosion dure (1.4s)
+         */
         let intervalTimer;
         let intervalExplosion;
         intervalTimer = setInterval(()=>{

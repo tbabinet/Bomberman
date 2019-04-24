@@ -1,6 +1,9 @@
+/**
+ * fonction lisant un fichier .json et renvoyant le niveau correspondant
+ * @param {le ficheir .json à lire} file 
+ */
 async function readJSon(file)
 {
-    //let lvl = new Niveau();
     let p = new Promise(function (success, failure) {
         var xhr = new XMLHttpRequest();
         xhr.addEventListener("readystatechange", (e)=>{
@@ -10,7 +13,7 @@ async function readJSon(file)
         })
         xhr.open("GET", file, true);
         xhr.send();
-         
+        
     });
 
     let lvl = await p.then(function (resp) {
@@ -20,6 +23,10 @@ async function readJSon(file)
     return lvl;
 }
 
+/**
+ * parcourt le json passé en paramètre en renvoie le niveau correspondant
+ * @param {l'objet json parsé} obj 
+ */
 function jsonToLevel(obj) { 
     let grid = obj.level;
     let gridBloc = new Array();

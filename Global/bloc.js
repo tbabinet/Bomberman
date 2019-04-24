@@ -17,6 +17,10 @@ class Bloc{
         this.cassable = cassable;
         this.passable = passable;
 
+        /**
+         * lorsqu'une bombe explose, on vérifie si elle n'atteint pas le bloc
+         * si oui, et qu'il est un bloc cassable, il change d'état
+         */
         addEventListener('bombExploded', (e)=>{
             let bomb = e.detail;
             for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {    
@@ -35,7 +39,6 @@ class Bloc{
                     } 
                 }
             }
-            
             for (let j = bomb.y - bomb.rangeUp; j <= bomb.y + bomb.rangeDown; j++) {
                 if(this.posX===j && this.posY===bomb.x){
                     switch (this.type) {
