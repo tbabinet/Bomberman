@@ -246,6 +246,7 @@ let init = async function () {
 /**
  * fonction appelée uniquement lors de l'arrivée du joueur dans la salle, va permettre
  * d'initialiser les joueurs déjà présents
+ * de plus, on ne récupère que les champs qu'il est possible d'envoyer par socket
  * par la suite, les modifications apportées par les actions des joueurs seront effectuées
  * à l'aide d'emit des messages "char_state_change_request" et "action_request"
  * @param {personnage à désérializer} c 
@@ -254,7 +255,7 @@ let init = async function () {
 function deserizalizeChar(c, l) {
     let nc = new Personnage(l);
     for (const key in c) {
-        if(key != "self" && key != "level"){          
+        if(key != "self" && key != "level" && key !="mvtEvent" && key != "deathEvt" ){          
             nc[key] = c[key];
         }
     }
