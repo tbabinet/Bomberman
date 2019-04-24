@@ -31,6 +31,7 @@ class Personnage{
         this.ghost = false;
         this.bombType = 0;
         this.deathEvt = new CustomEvent('charDie', {detail: this});
+        this.walking = false;
         addEventListener('bombExploded', (e)=>{
             let bomb = e.detail;
             for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {
@@ -57,48 +58,55 @@ class Personnage{
      * @param {direction en y} y 
      */
     move(x,y){
-        let newX = Math.trunc((this.posX+x)/20);
-        let newY = Math.trunc((this.posY+y)/20);
-        if(!this.moving){
-            this.moving=true;
-        }
-          
-        if(x===1){
-            newX = Math.ceil((this.posX+x)/20);
-            this.dir='r';
-            this.stepLR=!this.stepLR;
-        }
-        if(y===1){
-            newY = Math.ceil((this.posY+y)/20);
-            this.dir='d';
-            this.stepDown=!this.stepDown;
-        }
-        if(x===-1){
-            this.dir='l';
-            this.stepLR=!this.stepLR;
-        }
-        if(y===-1){
-            this.dir='u';
-            this.stepUp=!this.stepUp;
-        }
+        if(!this.walking){
+            this.walking=true;
+            let newX = Math.trunc((this.posX+x)/20);
+            let newY = Math.trunc((this.posY+y)/20);
+            if(!this.moving){
+                this.moving=true;
+            }
+            
+            if(x===1){
+                newX = Math.ceil((this.posX+x)/20);
+                this.dir='r';
+                this.stepLR=!this.stepLR;
+            }
+            if(y===1){
+                newY = Math.ceil((this.posY+y)/20);
+                this.dir='d';
+                this.stepDown=!this.stepDown;
+            }
+            if(x===-1){
+                this.dir='l';
+                this.stepLR=!this.stepLR;
+            }
+            if(y===-1){
+                this.dir='u';
+                this.stepUp=!this.stepUp;
+            }
 
-        /**
-         * dans un tableau, on parcourt les lignes
-         * puis les colonnes
-         */
-        let nextBloc = this.level.grille[newY][newX];
-        if(this.ghost){
-            this.posX+=(20*x);
-            this.posY+=(20*y);
-            window.dispatchEvent(this.mvtEvent);
-        }
-        else{
-            if(nextBloc.passable ){
+            /**
+             * dans un tableau, on parcourt les lignes
+             * puis les colonnes
+             */
+            let nextBloc = this.level.grille[newY][newX];
+            if(this.ghost){
                 this.posX+=(20*x);
                 this.posY+=(20*y);
                 window.dispatchEvent(this.mvtEvent);
             }
+            else{
+                if(nextBloc.passable ){
+                    this.posX+=(20*x);
+                    this.posY+=(20*y);
+                    window.dispatchEvent(this.mvtEvent);
+                }
+            }
+            setTimeout(()=>{
+                this.walking = false;
+            }, 100/this.speed); 
         }
+
     }
 
     dropBomb(x, y){

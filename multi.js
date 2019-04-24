@@ -156,7 +156,50 @@ let init = async function () {
 
     
     
-    window.addEventListener('keydown', (e)=>{
+    window.addEventListener('keydown', keyDownHandler);
+    window.addEventListener("keyup", (e)=>{
+        if(e.keyCode===38 ||e.keyCode===40 ||e.keyCode===39 ||e.keyCode===37){
+            socket.emit("char_state_change_request", "moving", false);
+        }
+        if(e.keyCode==32){
+            socket.emit("action_request", "dropBomb", {x:c.posX, y:c.posY});
+        }//lâcher une bombe
+    });
+    window.addEventListener('charMoved', (evt) => {
+        let c = evt.detail;
+        if(!c.walking){
+            let cx = Math.trunc(evt.detail.posX/20);
+            let cy = Math.trunc(evt.detail.posY/20);
+            if(l.grille[cy][cx].type===5){
+                console.log("GAGNE !!");
+            }
+        }
+        
+    });
+    window.addEventListener('charDie', (evt) => {
+        console.log("PERDU !");
+        window.removeEventListener("keydown", keyDownHandler);
+    });
+
+    let fps = 0;
+    let showFPS = false;
+    function draw() {
+        bombList = bombList.filter(b=>b.decompteExplosion>0);
+        c.level = l;
+        drawer.drawLevel(l);
+        drawer.drawChar(c);
+        for(id in listPlayers){
+            drawer.drawChar(listPlayers[id]);
+        }
+        bombList.forEach(bomb =>{        
+            drawer.drawBomb(bomb);
+        });
+        fps++;
+        requestAnimationFrame(draw);
+    }
+
+    function keyDownHandler(e) {
+
         if(e.keyCode==38 && c.posY>0){      
             try {
                 socket.emit("action_request", "move", {x:0, y:-1});      
@@ -177,50 +220,10 @@ let init = async function () {
             try {
                 socket.emit("action_request", "move", {x:1, y:0});
             } catch (error) {console.log(error)}         
-        }//vers la droite    
-    });
-
-    window.addEventListener("keyup", (e)=>{
-        if(e.keyCode===38 ||e.keyCode===40 ||e.keyCode===39 ||e.keyCode===37){
-            socket.emit("char_state_change_request", "moving", false);
-        }
-        if(e.keyCode==32){
-            socket.emit("action_request", "dropBomb", {x:c.posX, y:c.posY});
-        }//lâcher une bombe
-    });
-
-    window.addEventListener('charMoved', (evt) => {
-        let c = evt.detail;
-        if(!c.walking){
-            let cx = Math.trunc(evt.detail.posX/20);
-            let cy = Math.trunc(evt.detail.posY/20);
-            if(l.grille[cy][cx].type===5){
-                console.log("GAGNE !!");
-            }
-        }
-        
-    });
-
-    window.addEventListener('charDie', (evt) => {
-        console.log("PERDU !");
-    });
-
-    let fps = 0;
-    let showFPS = false;
-    function draw() {
-        bombList = bombList.filter(b=>b.decompteExplosion>0);
-        c.level = l;
-        drawer.drawLevel(l);
-        drawer.drawChar(c);
-        for(id in listPlayers){
-            drawer.drawChar(listPlayers[id]);
-        }
-        bombList.forEach(bomb =>{        
-            drawer.drawBomb(bomb);
-        });
-        fps++;
-        requestAnimationFrame(draw);
+        }//vers la droite   
     }
+
+
 
     window.requestAnimationFrame(draw);
     window.setInterval(()=>{ 
@@ -261,6 +264,8 @@ function deserizalizeChar(c, l) {
     }
     
     return nc;
+
+
 }
 
 window.addEventListener("load", init);
