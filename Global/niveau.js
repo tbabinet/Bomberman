@@ -30,29 +30,24 @@ class Niveau{
          * type :
          * 0 => ghost
          * 1 => bombe passant à travers les obstacles
+         * 2 => speed boost : 2x + rapide
          */
-        let objType = Math.floor(Math.random() * 2); //le type de l'objet
-        console.log(objType);
+        let objType = Math.floor(Math.random() * 3); //le type de l'objet
         let obj;
         switch (objType) {
             case 0:
-                obj = new Ghost(randBloc.posY, randBloc.posX);
-                this.objets.push(obj);              
+                obj = new Ghost(randBloc.posY, randBloc.posX);        
                 break;
             case 1:
                 obj = new BigBomb(randBloc.posY, randBloc.posX);
-                this.objets.push(obj);
                 break;
+            case 2:
+                obj = new SpeedBoost(randBloc.posY, randBloc.posX);
             default:
                 break;
+            
         }
-        
-
-        
-        
-
-        
-
-        
+        this.objets.push(obj);
+    
     }
 }

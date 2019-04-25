@@ -134,6 +134,10 @@ class Drawer{
                 case "BigBomb":
                     this.context.drawImage(this.sprite_sheet, 176,239+obj.draw_state*16, 16,16, obj.x*20, obj.y*20,16,16);
                     break; 
+                case "SpeedBoost":
+                    this.context.rect(obj.x*20,obj.y*20, 16,16);
+                    this.context.stroke();
+                    break; 
                 default:
                     break;
             }

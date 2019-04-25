@@ -17,7 +17,6 @@ class Personnage{
 
         this.posX = 20;
         this.posY = 20;
-        
         this.height = 20;
         this.width = 20;
         this.level = l;
@@ -110,8 +109,7 @@ class Personnage{
     }
 
     dropBomb(x, y){
-        let bomb = new Bombe(Math.trunc(x/20), Math.trunc(y/20), 2, 2, this.level, this.bombType);
-        return bomb; 
+        return new Bombe(Math.trunc(x/20), Math.trunc(y/20), 2, 2, this.level, this.bombType);
     }
 
     /**

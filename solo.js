@@ -5,9 +5,9 @@ let init = async function () {
     let drawer = new Drawer();
 
     let l = await r;
-    let c = new Personnage(l);
+    let c = new Personnage(l, 10);
     let fps = 0;
-    
+    let nbBomb = 10;
     let bombList = new Array();
     let showFPS = false;
 
@@ -37,13 +37,6 @@ let init = async function () {
                 c.move(1, 0);
             } catch (error) {console.log(error)}         
         }//vers la droite
-        // if(e.keyCode==32){
-        //     if(c.slingshot){
-        //         bombList.push(c.dropBomb(c.posX, c.posY));
-        //     }
-            
-        // }//lâcher une bombe
-        
     });
 
     window.addEventListener("keyup", (e)=>{
@@ -51,20 +44,20 @@ let init = async function () {
             c.moving = false;
         }
         if(e.keyCode==32){
-            bombList.push(c.dropBomb(c.posX, c.posY));
+            if(--nbBomb>0){
+                bombList.push(c.dropBomb(c.posX, c.posY));
+            }
         }//lâcher une bombe
     });
 
     window.addEventListener('charMoved', (evt) => {
         let c = evt.detail;
-        if(!c.walking){
-            let cx = Math.trunc(evt.detail.posX/20);
-            let cy = Math.trunc(evt.detail.posY/20);
-            if(l.grille[cy][cx].type===5){
-                console.log("GAGNE !!");
-            }
-        }
-        
+
+        let cx = Math.trunc(evt.detail.posX/20);
+        let cy = Math.trunc(evt.detail.posY/20);
+        if(l.grille[cy][cx].type===5){
+            console.log("GAGNE !!");
+        } 
     });
 
     window.addEventListener('charDie', (evt) => {
