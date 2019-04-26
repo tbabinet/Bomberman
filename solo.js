@@ -57,9 +57,27 @@ let init = async function () {
         let cx = Math.trunc(evt.detail.posX/20);
         let cy = Math.trunc(evt.detail.posY/20);
         if(l.grille[cy][cx].type===5){
-            console.log("GAGNE !!");
+            setTimeout(()=>{
+                cancelAnimationFrame(animationFrameId);
+                drawer.drawSoloVictory();
+                window.addEventListener("keypress", (e)=>{
+                    //m 109
+                    if(e.keyCode===114){
+                        document.location.reload(true);
+                    }
+                    if(e.keyCode===109){
+                        document.location.replace("index.html");
+                    }
+                });
+            }, 1000);
+        } 
+    });
+
+
+    window.addEventListener('charDie', (evt) => {
+        setTimeout(()=>{
             cancelAnimationFrame(animationFrameId);
-            drawer.drawSoloVictory();
+            drawer.drawSoloDefeat();
             window.addEventListener("keypress", (e)=>{
                 //m 109
                 if(e.keyCode===114){
@@ -69,12 +87,7 @@ let init = async function () {
                     document.location.replace("index.html");
                 }
             });
-        } 
-    });
-
-    window.addEventListener('charDie', (evt) => {
-        console.log("PERDU !");
-        cancelAnimationFrame(animationFrameId);
+        }, 1000);
     });
 
     

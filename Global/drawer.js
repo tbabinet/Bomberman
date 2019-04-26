@@ -734,6 +734,21 @@ class Drawer{
         this.context.fillText(text2, 400-m2/2, 400);
     }
 
+    drawSoloDefeat(){
+        this.context.fillStyle = "black";
+        this.context.fillRect(0,0,800,700);
+        this.context.fillStyle = "white";
+        let text1 = "Perdu !";
+        this.context.font = "20px Courier";
+        let text2 = "Appuyez sur r pour réessayer, m pour retourner au menu principal.";
+        let m1 = this.context.measureText(text1).width;
+        let m2 = this.context.measureText(text2).width;
+        this.context.fillText(text1, 400-m1/2, 340);
+        this.context.fillText(text2, 400-m2/2, 400);
+    }
+
+    
+
 
     
     
