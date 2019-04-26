@@ -200,7 +200,6 @@ let init = async function () {
     }
 
     function keyDownHandler(e) {
-
         if(e.keyCode==38 && c.posY>0){      
             try {
                 socket.emit("action_request", "move", {x:0, y:-1});      

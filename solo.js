@@ -10,6 +10,7 @@ let init = async function () {
     let nbBomb = 10;
     let bombList = new Array();
     let showFPS = false;
+    let animationFrameId;
 
     window.addEventListener('keydown', (e)=>{
         if(e.keyCode==38 && c.posY>0){      
@@ -57,11 +58,23 @@ let init = async function () {
         let cy = Math.trunc(evt.detail.posY/20);
         if(l.grille[cy][cx].type===5){
             console.log("GAGNE !!");
+            cancelAnimationFrame(animationFrameId);
+            drawer.drawSoloVictory();
+            window.addEventListener("keypress", (e)=>{
+                //m 109
+                if(e.keyCode===114){
+                    document.location.reload(true);
+                }
+                if(e.keyCode===109){
+                    document.location.replace("index.html");
+                }
+            });
         } 
     });
 
     window.addEventListener('charDie', (evt) => {
         console.log("PERDU !");
+        cancelAnimationFrame(animationFrameId);
     });
 
     
@@ -76,7 +89,7 @@ let init = async function () {
         drawer.drawInfo(c, false);
         drawer.drawNbBombs(nbBomb);
         fps++;
-        requestAnimationFrame(draw);
+        animationFrameId=requestAnimationFrame(draw);
     }
 
     window.requestAnimationFrame(draw)

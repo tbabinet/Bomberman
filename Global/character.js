@@ -90,17 +90,10 @@ class Personnage{
              * puis les colonnes
              */
             let nextBloc = this.level.grille[newY][newX];
-            if(this.ghost){
+            if(this.ghost || nextBloc.passable){
                 this.posX+=(20*x);
                 this.posY+=(20*y);
                 window.dispatchEvent(this.mvtEvent);
-            }
-            else{
-                if(nextBloc.passable ){
-                    this.posX+=(20*x);
-                    this.posY+=(20*y);
-                    window.dispatchEvent(this.mvtEvent);
-                }
             }
             setTimeout(()=>{
                 this.walking = false;

@@ -686,7 +686,6 @@ class Drawer{
         for (let bonus in c.bonuses) {
             if (c.bonuses.hasOwnProperty(bonus)) {
                 if(bonus=="ghost") {
-                    console.log("ghost");
                     this.context.drawImage(this.ghost_sheet, 0,0, 16,16, offset, 605,50,50);
                     offset+=50;
                     text = c.bonuses["ghost"]<10 ? ":0"+c.bonuses["ghost"] : ":"+c.bonuses["ghost"];
@@ -720,6 +719,19 @@ class Drawer{
         this.context.drawImage(this.sprite_sheet, 64, 288, 16, 16, 0, 605, 50, 50);
         let text = nb<10 ? nb>0 ? ":0"+nb :":00" : ":"+nb;
         this.context.fillText(text, 50, 650);
+    }
+
+    drawSoloVictory(){
+        this.context.fillStyle = "black";
+        this.context.fillRect(0,0,800,700);
+        this.context.fillStyle = "white";
+        let text1 = "Victoire !";
+        this.context.font = "20px Courier";
+        let text2 = "Appuyez sur r pour rejouer, m pour retourner au menu principal.";
+        let m1 = this.context.measureText(text1).width;
+        let m2 = this.context.measureText(text2).width;
+        this.context.fillText(text1, 400-m1/2, 340);
+        this.context.fillText(text2, 400-m2/2, 400);
     }
 
 
