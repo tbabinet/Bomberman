@@ -5,7 +5,7 @@
 async function readJSon(file)
 {
     let p = new Promise(function (success, failure) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
         xhr.addEventListener("readystatechange", (e)=>{
             if(xhr.status==200 && xhr.readyState==4){
                 success(xhr.response);

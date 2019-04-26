@@ -8,14 +8,17 @@ class Drawer{
         this.sprite_sheet = document.getElementById("sprite_sheet");
         this.explosion_sheet = document.getElementById("explosion_sheet");
         this.ghost_sheet = document.getElementById("ghost_sheet");
-        this.slingshot_sheet = document.getElementById("slingshot_sheet");
+        this.flash_sheet = document.getElementById("flash_sheet");
+        
     }
     
     /**
      * fonction appelée lors du dessin d'un personnage,
      * on switch sur la direction du personnage, puis sur si il fait un pas 
      * à gauche ou à droite, et enfin sur si il a l'effet ghost ou non
-     * @param {le perso à dessiner} perso 
+     * 
+     * dessine aussi les compteurs des différents bonus ramassés par le personnage
+     * @param {Personnage} perso le perso à dessiner
      */
     drawChar(perso){
         let sx, sy = 0;
@@ -114,7 +117,7 @@ class Drawer{
 
     /**
      * fonction appelé lors du dessin d'un niveau
-     * @param {le niveau à dessiner} level 
+     * @param {Niveau} level le niveau à dessiner
      */
     drawLevel(level){
         let i = 0;
@@ -135,8 +138,7 @@ class Drawer{
                     this.context.drawImage(this.sprite_sheet, 176,239+obj.draw_state*16, 16,16, obj.x*20, obj.y*20,16,16);
                     break; 
                 case "SpeedBoost":
-                    this.context.rect(obj.x*20,obj.y*20, 16,16);
-                    this.context.stroke();
+                    this.context.drawImage(this.flash_sheet, 0,0, 60,60, obj.x*20, obj.y*20,16,16);
                     break; 
                 default:
                     break;
@@ -149,9 +151,9 @@ class Drawer{
      * les bloc étant stockés dans un tableau, et parcourus à l'aide d'une double
      * boucle, la première boucle (i) donne la position en y d'un bloc, et la deuxième (j) sa 
      * position en x
-     * @param {le bloc à dessiner} bloc 
-     * @param {le coordonnée en y du bloc} i 
-     * @param {la coordonnée en x du bloc} j 
+     * @param {Bloc} bloc le bloc à dessiner
+     * @param {Number} i la coordonnée en y du bloc
+     * @param {Number} j la coordonnée en x du bloc
      */
     drawBloc(bloc, i, j){
         switch (bloc.type) {
@@ -666,5 +668,61 @@ class Drawer{
             }        
         }
     }
+
+    /**
+     * Indique au joueur les infos relatives à ses bonus
+     * @param {Personnage} c personnage dont on indique les infos
+     * @param {boolean} mult booléen utilisé pour le calcul de l'offset : true si multijoueur, false si solo
+     * si mult, on ne prévoit pas de décalage pour l'affichage des bombes (car nombre illimité)
+     */
+    drawInfo(c, mult){
+        this.context.fillStyle = "black";
+        this.context.fillRect(0,600,800,60);
+        this.context.fillStyle = "white";
+        this.context.font = "40px Courier";
+        let offset = mult ? 0 : 125 ;
+        let text;
+        
+        for (let bonus in c.bonuses) {
+            if (c.bonuses.hasOwnProperty(bonus)) {
+                if(bonus=="ghost") {
+                    console.log("ghost");
+                    this.context.drawImage(this.ghost_sheet, 0,0, 16,16, offset, 605,50,50);
+                    offset+=50;
+                    text = c.bonuses["ghost"]<10 ? ":0"+c.bonuses["ghost"] : ":"+c.bonuses["ghost"];
+                    this.context.fillText(text, offset, 650);   
+                    offset+=(Math.floor(this.context.measureText(text).width+3));              
+                }
+                else if(bonus=="bigBomb"){
+                    this.context.drawImage(this.sprite_sheet, 176,239, 16,16, offset, 605,50,50);
+                    offset+=50;
+                    text = c.bonuses["bigBomb"]<10 ? ":0"+c.bonuses["bigBomb"] : ":"+c.bonuses["bigBomb"];
+                    this.context.fillText(text, offset, 650);
+                    offset+=(Math.floor(this.context.measureText(text).width+3));
+                }
+                else if(bonus=="speedUp"){
+                    this.context.drawImage(this.flash_sheet, 0,0, 60,60, offset, 605,50,50);
+                    offset+=50;
+                    text = c.bonuses["speedUp"]<10 ? ":0"+c.bonuses["speedUp"] : ":"+c.bonuses["speedUp"];
+                    this.context.fillText(text, offset, 650);
+                    offset+=(Math.floor(this.context.measureText(text).width+3));  
+                }  
+            }
+        }
+    }
+
+    /**
+     * Indique au joueur le nombre de bombes qu'il peut encore poser
+     * @param {Number} nb le nombre de bombes restantes
+     */
+    drawNbBombs(nb){
+        
+        this.context.drawImage(this.sprite_sheet, 64, 288, 16, 16, 0, 605, 50, 50);
+        let text = nb<10 ? nb>0 ? ":0"+nb :":00" : ":"+nb;
+        this.context.fillText(text, 50, 650);
+    }
+
+
+    
     
 }

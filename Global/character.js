@@ -31,6 +31,7 @@ class Personnage{
         this.bombType = 0;
         this.deathEvt = new CustomEvent('charDie', {detail: this});
         this.walking = false;
+        this.bonuses = {}; // fait peut être bugger le multi lors de l'envoie, à voir
         addEventListener('bombExploded', (e)=>{
             let bomb = e.detail;
             for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {
@@ -134,6 +135,63 @@ class Personnage{
             this.posX=closeX*20;
             this.posY=closeY*20;
         }
+    }
+
+    ghosted(){
+        if(Number.isInteger(this.bonuses["ghost"])){
+            this.bonuses["ghost"]=5;
+        }
+        else{
+            this.ghost=true;
+            this.bonuses["ghost"]=5;
+            let interval;
+            interval = setInterval(() => {
+                if(--this.bonuses["ghost"]<0){
+                    this.unGhost();
+                    delete this.bonuses["ghost"];
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+        
+    }
+
+    spedUp(){
+        if(Number.isInteger(this.bonuses["speedUp"])){
+            this.bonuses["speedUp"]=5;
+        }
+        else{
+            this.speed=2;
+            this.bonuses["speedUp"]=5;
+            let interval;
+            interval = setInterval(() => {
+                if(--this.bonuses["speedUp"]<0){
+                    this.speed=1
+                    delete this.bonuses["speedUp"];
+                    clearInterval(interval);
+                }
+            }, 1000); 
+        }
+        
+    }
+
+    bigBombed(){
+        if(Number.isInteger(this.bonuses["bigBomb"])){
+            this.bonuses["bigBomb"]=5;
+        }
+        else{
+            this.bombType=1;
+            this.bonuses["bigBomb"]=5;
+            let interval;
+            interval = setInterval(() => {
+                if(--this.bonuses["bigBomb"]<0){
+                    this.bombType = 0;
+                    delete this.bonuses["bigBomb"];
+                    clearInterval(interval);
+                }
+            }, 1000);  
+        }
+        
     }
 
 

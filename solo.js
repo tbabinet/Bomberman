@@ -73,6 +73,8 @@ let init = async function () {
         bombList.forEach(bomb =>{        
             drawer.drawBomb(bomb);
         });
+        drawer.drawInfo(c, false);
+        drawer.drawNbBombs(nbBomb);
         fps++;
         requestAnimationFrame(draw);
     }

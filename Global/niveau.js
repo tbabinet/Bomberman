@@ -23,31 +23,35 @@ class Niveau{
             this.objets = this.objets.filter(b=>b!=e.detail);    
         });
 
-        let iRandBloc = Math.floor(Math.random() * Math.floor(this.sol.length)); //le bloc sur lequel on va poser notre objet
-        let randBloc = this.sol[iRandBloc];
         
+
         /**
          * type :
          * 0 => ghost
          * 1 => bombe passant à travers les obstacles
          * 2 => speed boost : 2x + rapide
          */
-        let objType = Math.floor(Math.random() * 3); //le type de l'objet
-        let obj;
-        switch (objType) {
-            case 0:
-                obj = new Ghost(randBloc.posY, randBloc.posX);        
-                break;
-            case 1:
-                obj = new BigBomb(randBloc.posY, randBloc.posX);
-                break;
-            case 2:
-                obj = new SpeedBoost(randBloc.posY, randBloc.posX);
-            default:
-                break;
-            
+        for (let index = 0; index < 15; index++) {
+            let objType = Math.floor(Math.random() * 3); //le type de l'objet
+            let obj;
+            let iRandBloc = Math.floor(Math.random() * Math.floor(this.sol.length)); //le bloc sur lequel on va poser notre objet
+            let randBloc = this.sol[iRandBloc];
+            switch (objType) {
+                case 0:
+                    obj = new Ghost(randBloc.posY, randBloc.posX);        
+                    break;
+                case 1:
+                    obj = new BigBomb(randBloc.posY, randBloc.posX);
+                    break;
+                case 2:
+                    obj = new SpeedBoost(randBloc.posY, randBloc.posX);
+                default:
+                    break;
+                
+            }
+            this.objets.push(obj);
         }
-        this.objets.push(obj);
+        
     
     }
 }

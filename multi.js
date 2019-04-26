@@ -194,6 +194,7 @@ let init = async function () {
         bombList.forEach(bomb =>{        
             drawer.drawBomb(bomb);
         });
+        drawer.drawInfo(c, true);
         fps++;
         requestAnimationFrame(draw);
     }
@@ -252,8 +253,8 @@ let init = async function () {
  * de plus, on ne récupère que les champs qu'il est possible d'envoyer par socket
  * par la suite, les modifications apportées par les actions des joueurs seront effectuées
  * à l'aide d'emit des messages "char_state_change_request" et "action_request"
- * @param {personnage à désérializer} c 
- * @param {niveau du personnage} l 
+ * @param {Personnage} c personnage à désérializer 
+ * @param {Niveau} l niveau du personnage 
  */
 function deserizalizeChar(c, l) {
     let nc = new Personnage(l);

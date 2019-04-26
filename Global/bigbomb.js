@@ -17,6 +17,7 @@ class BigBomb extends Objet{
                 this.draw_state=0;
             }
         }, 500); 
+        this.timer = 5;
     }
     
 
@@ -28,17 +29,16 @@ class BigBomb extends Objet{
      * @param {l'évènement traité par le handler} evt 
      */
     handler(evt) {
-        
         let c = evt.detail;
         let cx = Math.trunc(evt.detail.posX/20);
         let cy = Math.trunc(evt.detail.posY/20);
         if(cx==this.x && cy==this.y && this.used ==false ){
-            c.bombType = 1; 
+            c.bigBombed();
+            clearInterval(this.interval_draw);
             this.used=true;
             dispatchEvent(this.usedEvt);
-            setTimeout(() => {
-                c.bombType = 0;
-            }, 10000); 
+            
+
         }
     }
 }
