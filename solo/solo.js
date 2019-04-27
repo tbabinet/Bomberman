@@ -1,7 +1,7 @@
 let init = async function () {
     
     let canvas = document.getElementById("cvn");
-    let r = readJSon("niveau1-solo.json");
+    let r = readJSon("niveau1.json");
     let drawer = new Drawer();
 
     let l = await r;
@@ -57,6 +57,7 @@ let init = async function () {
         let cx = Math.trunc(evt.detail.posX/20);
         let cy = Math.trunc(evt.detail.posY/20);
         if(l.grille[cy][cx].type===5){
+            //on ajoute un timeout afin que le dessin ait le temps de s'actualiser et qu'on puisse voir le personnage sur la case de victoire
             setTimeout(()=>{
                 cancelAnimationFrame(animationFrameId);
                 drawer.drawSoloVictory();
@@ -75,8 +76,11 @@ let init = async function () {
 
 
     window.addEventListener('charDie', (evt) => {
+        //Timer pour ne pas avoir l'écran de défaite tout de suite 
+        cancelAnimationFrame(animationFrameId);
+
+        
         setTimeout(()=>{
-            cancelAnimationFrame(animationFrameId);
             drawer.drawSoloDefeat();
             window.addEventListener("keypress", (e)=>{
                 //m 109
@@ -84,7 +88,7 @@ let init = async function () {
                     document.location.reload(true);
                 }
                 if(e.keyCode===109){
-                    document.location.replace("index.html");
+                    document.location.replace("../index.html");
                 }
             });
         }, 1000);
@@ -105,7 +109,7 @@ let init = async function () {
         animationFrameId=requestAnimationFrame(draw);
     }
 
-    window.requestAnimationFrame(draw)
+    window.requestAnimationFrame(draw);
     window.setInterval(()=>{ 
         if(showFPS){
             document.getElementById('infodebug').innerHTML="Images par seconde : "+fps;
