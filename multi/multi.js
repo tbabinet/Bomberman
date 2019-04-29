@@ -9,12 +9,8 @@ let init = async function () {
     let socket = io('http://localhost/');
     let animationFrameId;
     /**
-     * Message reçu à l'arrivée dans la salle:
-     * - si on est le premier à arriver, on reçoit simplement un message 
-     *  nous informant que l'on est le premier, on va alors envoyer la liste des objets
-     *  du niveau dans lequel on se trouve (afin que tout le monde ait le même niveau)
-     * - sinon, on reçoit en plus la liste des objets du premier joueur à être arrivé
-     *  + la liste des joueurs déjà présent, avec socket.id + perso sérializé
+     * lors de l'arrivée dans la salle, on reçoit un message comportant les différentes informations nécessaires à la partie : 
+     * nos informations de personnage (coordonnées), le niveau dans lequel on va jouer, et les joueurs déjà présents
      */
     socket.on('init', (data, lpSoft, level)=>{
         l = new Niveau(level.grille);
@@ -22,7 +18,7 @@ let init = async function () {
         l.objets = unsoftenObjects(level.objets);
         
     
-        c=new Personnage(data.nb);
+        c=new Personnage();
         c.posX=data.x;
         c.posY=data.y;
         

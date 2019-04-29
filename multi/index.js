@@ -30,6 +30,7 @@ app.listen(80);
  */
 let nb_player = 0;
 let listPlayers = {};
+let startPositions = [{x:20,y:20},{x:760,y:20},{x:20,y:560},{x:760,y:560}];
 let bombList = Array();
 let l;
 let eventEmitter = common.commonEmitter;
@@ -44,18 +45,43 @@ async function handler (req, res) {
     }   
 }
 
+/**
+ * Assigne la première position de départ disponible au joueur
+ * @param {Number} x coordonnée x de la position
+ * @param {Number} y coordonnée y de la position
+ */
+function assignStartPosition(){
+    let pos;
+    if(Object.keys(listPlayers).length==0){
+        return startPositions[0];
+    }
+    
+    for (let i = 0; i < startPositions.length; i++) {
+        p = startPositions[i];
+        occupied = false;
+        for (const id in listPlayers) {
+            if (listPlayers.hasOwnProperty(id)) {
+                if (listPlayers[id].posX==p.x && listPlayers[id].posY==p.y){
+                    occupied=true;
+                    break;
+                }    
+            }
+        }
+        if(!occupied){
+            pos=p;
+            break;
+        } 
+    }
+    return pos; 
+}
+
 function ioHandler(socket){
     nb_player++;
     let c = new PersonnageServer(l, nb_player, socket.id);
-    
-    switch (nb_player) {
-        case 2:
-            c.posX=760;
-            c.posY=20;
-            break;
-        default:
-            break;
-    }
+
+    let startP = assignStartPosition();
+    c.posX = startP.x;
+    c.posY = startP.y;
         
     //la liste des joueurs sans les références à leur niveau, à eux mêmes, à l'eventEmitter, et à leur id 
     let listPlayersSoft = {};
@@ -188,7 +214,7 @@ function serve_static_file(req, resp, base, file) {
 function serializeChar(char) {
     let serializedChar = {};
     for (const key in char) {
-        if (char.hasOwnProperty(key)  && key!="level" && key!= "self" && key != "eventEmitter" && key != "id") {
+        if (char.hasOwnProperty(key)  && key!="level" && key!= "self" && key != "eventEmitter" && key != "id" && key!="playerNumber") {
             serializedChar[key] = char[key];
         }
     }
