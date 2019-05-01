@@ -2,9 +2,9 @@ const app = require('http').createServer(handler)
 const io = require('socket.io')(app);
 const fs = require('fs');
 const path = require('path');
-const json = require ('../modules/json_server');
-const common = require('../modules/common');
 const PersonnageServer = require ('../modules/character_server');
+const NiveauServer = require('../modules/niveau_server');
+const events = require('events');
 
 const MIME_TYPES = {
     ".htm" : "text/html",
@@ -32,17 +32,14 @@ let nb_player = 0;
 let listPlayers = {};
 let startPositions = [{x:20,y:20},{x:760,y:20},{x:20,y:560},{x:760,y:560}];
 let bombList = Array();
-let l;
-let eventEmitter = common.commonEmitter;
+let roomList = {}
+let listLevels = {};
+let eventHandlersList = {};
+//let eventEmitter = common.commonEmitter;
 let init=false;
 
 async function handler (req, res) {
     serve_static_file(req, res, ".", req.url);
-    if(!init){
-        let r = json.readJSon("niveau1.json");//le json encodant le niveau
-        l = await r; //le niveau encodé par le json
-        init=true;
-    }   
 }
 
 /**
@@ -50,18 +47,18 @@ async function handler (req, res) {
  * @param {Number} x coordonnée x de la position
  * @param {Number} y coordonnée y de la position
  */
-function assignStartPosition(){
-    let pos;
-    if(Object.keys(listPlayers).length==0){
+function assignStartPosition(room){
+    if(Object.keys(listPlayers[room]).length==0){
         return startPositions[0];
     }
+    
     
     for (let i = 0; i < startPositions.length; i++) {
         p = startPositions[i];
         occupied = false;
-        for (const id in listPlayers) {
-            if (listPlayers.hasOwnProperty(id)) {
-                if (listPlayers[id].posX==p.x && listPlayers[id].posY==p.y){
+        for (const id in listPlayers[room]) {
+            if (listPlayers[room].hasOwnProperty(id)) {
+                if (listPlayers[room][id].posX==p.x && listPlayers[room][id].posY==p.y){
                     occupied=true;
                     break;
                 }    
@@ -75,30 +72,33 @@ function assignStartPosition(){
     return pos; 
 }
 
-function ioHandler(socket){
-    nb_player++;
-    let c = new PersonnageServer(l, nb_player, socket.id);
+function ioHandler(socket, room){
+    socket.join(room);
 
-    let startP = assignStartPosition();
+    roomList[room]++;
+
+    let c = new PersonnageServer(listLevels[room], nb_player, socket.id, eventHandlersList[room]);
+
+    let startP = assignStartPosition(room);
     c.posX = startP.x;
     c.posY = startP.y;
         
     //la liste des joueurs sans les références à leur niveau, à eux mêmes, à l'eventEmitter, et à leur id 
     let listPlayersSoft = {};
-    for (let id in listPlayers) {
-        if (listPlayers.hasOwnProperty(id)) {
-            listPlayersSoft[id] = serializeChar(listPlayers[id]);
+    for (let id in listPlayers[room]) {
+        if (listPlayers[room].hasOwnProperty(id)) {
+            listPlayersSoft[id] = serializeChar(listPlayers[room][id]);
         }
     }
 
-    let listObjets = softenObjects(l.objets);
+    let listObjets = softenObjects(listLevels[room].objets);
     
     //On envoie au joueur sa position de départ, son numéro, ainsi que le niveau dans lequel il va jouer
-    socket.emit('init', {nb:nb_player, x:c.posX, y:c.posY}, listPlayersSoft, {grille:l.grille, sol: l.sol, objets: listObjets});
+    socket.emit('init', {nb:nb_player, x:c.posX, y:c.posY}, listPlayersSoft, {grille:listLevels[room].grille, sol: listLevels[room].sol, objets: listObjets});
     //on informe les joueurs déjà présents qu'un joueur est arrivé
-    socket.broadcast.emit("player_connected", socket.id, {nb:nb_player, x:c.posX, y:c.posY});
+    socket.to(room).emit("player_connected", socket.id, {nb:nb_player, x:c.posX, y:c.posY});
     //on ajoute le joueur à la liste des joueurs présents
-    listPlayers[socket.id]=c;
+    listPlayers[room][socket.id]=c;
 
     /**
      * un joueur demande à effectuer une action
@@ -106,46 +106,46 @@ function ioHandler(socket){
      */
     socket.on("action_request", (action, args)=>{
         if(action=="move"){
-            listPlayers[socket.id].move(args.x, args.y);
-            let serialized = serializeChar(listPlayers[socket.id]);
+            listPlayers[room][socket.id].move(args.x, args.y);
+            let serialized = serializeChar(listPlayers[room][socket.id]);
             socket.emit("change_char_state", serialized);
-            socket.broadcast.emit("change_player_state", socket.id, serialized);
+            socket.to(room).emit("change_player_state", socket.id, serialized);
         }
         else if(action=="dropBomb"){
-            let b = listPlayers[socket.id].dropBomb(args.x, args.y)
-            let serialized = serializeBomb(b);
+            let b = listPlayers[room][socket.id].dropBomb(args.x, args.y)
+            let serializedBomb = serializeBomb(b);
             bombList.push(b);
-            socket.emit("bomb_dropped", serializeBomb(serialized));
-            socket.broadcast.emit("bomb_dropped", serialized);   
+            socket.emit("bomb_dropped", serializeBomb(serializedBomb));
+            socket.to(room).emit("bomb_dropped", serializedBomb);   
         }
     });
 
     /**
      * La liste des objets a changé (= un objet a été ramassé)
      */
-    eventEmitter.on("listObjectChanged", ()=>{
-        let listObjets = softenObjects(l.objets);        
+    eventHandlersList[room].on("listObjectChanged", ()=>{
+        let listObjets = softenObjects(listLevels[room].objets);        
         socket.emit("listObjectChanged", listObjets);
-        socket.broadcast.emit("listObjectChanged", listObjets);
+        socket.to(room).emit("listObjectChanged", listObjets);
     });
 
     /**
      * L'état d'un personnage a changé (= il a gagné/perdu un bonus)
      */
-    eventEmitter.on("char_state_changed", (c)=>{  
+    eventHandlersList[room].on("char_state_changed", (c)=>{  
         if(c.id==socket.id){
-            let serialized = serializeChar(listPlayers[socket.id]);
+            let serialized = serializeChar(listPlayers[room][socket.id]);
             socket.emit("change_char_state", serialized);
-            socket.broadcast.emit("change_player_state", socket.id, serialized);
+            socket.to(room).emit("change_player_state", socket.id, serialized);
         }
     });
 
 
-    eventEmitter.on("charDie", (c)=>{  
+    eventHandlersList[room].on("charDie", (c)=>{          
         if(c.id==socket.id){
-            let serialized = serializeChar(listPlayers[socket.id]);
+            let serialized = serializeChar(listPlayers[room][socket.id]);
             socket.emit("charDie", serialized);
-            socket.broadcast.emit("change_player_state", socket.id, serialized);
+            socket.to(room).emit("change_player_state", socket.id, serialized);
         }  
         /**
          * On regarde si le nombre de joueurs encore en vie
@@ -153,16 +153,17 @@ function ioHandler(socket){
          *  -> on va alors réinitialiser la liste des joueurs, ainsi que le niveau (il sera réinitialisé lors de la première connexion)
          */      
         let alivePlayers = Array();
-        for (const id in listPlayers) {
-            if (listPlayers.hasOwnProperty(id)) {
-                if(!listPlayers[id].dead){
-                    alivePlayers.push(listPlayers[id]);
+        for (const id in listPlayers[room]) {
+            if (listPlayers[room].hasOwnProperty(id)) {
+                if(!listPlayers[room][id].dead){
+                    alivePlayers.push(listPlayers[room][id]);
                 }
             }
         }
+        
         if(alivePlayers.length===1){
             socket.emit("end_game", alivePlayers[0].playerNumber);
-            socket.broadcast.emit("end_game", alivePlayers[0].playerNumber);
+            socket.to(room).emit("end_game", alivePlayers[0].playerNumber);
             listPlayers = {};
             init=false;
         }
@@ -173,9 +174,9 @@ function ioHandler(socket){
     /**
      * l'état du niveau a changé : on a modifié un bloc
      */
-    eventEmitter.on("level_changed", ()=>{
-        socket.emit("level_changed", l.grille);
-        socket.broadcast.emit("level_changed", l.grille);
+    eventHandlersList[room].on("level_changed", ()=>{
+        socket.emit("level_changed", listLevels[room].grille);
+        socket.to(room).emit("level_changed", listLevels[room].grille);
     });
 
 
@@ -185,14 +186,32 @@ function ioHandler(socket){
      */
     socket.on('disconnect', function () {
         nb_player--;
-        delete listPlayers[socket.id];
-        socket.broadcast.emit("player_disconnected", socket.id);
+        delete listPlayers[room][socket.id];
+        socket.to(room).emit("player_disconnected", socket.id);
         console.log('a player disconnected, '+nb_player+'restants');
     });
 
 }
 
-io.on('connection', ioHandler);
+io.on('connection', (socket)=>{
+    socket.emit('rooms', roomList);
+    socket.on('createRoom', (room)=>{
+        let em = new events.EventEmitter();
+        em.setMaxListeners(Number.POSITIVE_INFINITY);
+        
+        let l = new NiveauServer(em);
+        listLevels[room]=l;      
+        eventHandlersList[room] = em;
+        
+        
+        listPlayers[room]={}
+        roomList[room]=0;
+        ioHandler(socket, room);
+    });
+    socket.on('joinRoom', (room)=>{
+        ioHandler(socket, room);
+    });
+});
 
 
 function serve_static_file(req, resp, base, file) {

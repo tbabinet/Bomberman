@@ -10,8 +10,8 @@ class BombeServer extends ObjetServer {
      * @param {le niveau auquel la bombe appartient} level 
      * @param {le type de la bombe} type 
      */
-    constructor(x, y, dmg, range, level, type){
-        super(x,y);
+    constructor(x, y, dmg, range, level, type, em){
+        super(x,y, em);
         this.dmg = dmg;
         this.decompteTimer = 3;
         this.decompteExplosion = 1.4;
@@ -24,7 +24,7 @@ class BombeServer extends ObjetServer {
         this.rangeDown = 2;
         //this.self = this;
         this.type = type;
-        
+        this.eventEmitter=em;
         /** 
         On détermine le rayon de l'explosion à gauche/droite et en haut/bas
         */

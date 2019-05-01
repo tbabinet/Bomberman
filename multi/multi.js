@@ -3,16 +3,43 @@ let init = async function () {
     let drawer = new Drawer();
 
     let listPlayers = {}; // la liste des joueurs (client non compris)
-    //let c;
+    let c;
     let l;
     let bombList = Array();//la liste de bombes
     let socket = io('http://localhost/');
     let animationFrameId;
+
+    socket.on('rooms', (roomList)=>{
+        
+        let roomsDiv = document.getElementById("rooms");
+        for (const room in roomList) {
+            if (roomList.hasOwnProperty(room) && roomList[room]<4) {
+                let roomHTML = document.createElement("div"); 
+                let roomInfos = document.createElement("p");
+                roomInfos.innerHTML = room +" "+roomList[room]+"/4" ;
+                let btnJoin = document.createElement("button");
+                btnJoin.setAttribute('class',"btn btn-link");
+                btnJoin.innerHTML = "Rejoindre";
+                btnJoin.addEventListener("click", (e)=>{
+                    socket.emit("joinRoom", room);
+                });
+                roomInfos.appendChild(btnJoin);
+                roomHTML.appendChild(roomInfos);
+                roomsDiv.appendChild(roomHTML);
+            }
+        }
+    });
+
     /**
      * lors de l'arrivée dans la salle, on reçoit un message comportant les différentes informations nécessaires à la partie : 
      * nos informations de personnage (coordonnées), le niveau dans lequel on va jouer, et les joueurs déjà présents
      */
     socket.on('init', (data, lpSoft, level)=>{
+        document.getElementById('lobby').style.visibility = 'hidden';
+        document.getElementById('game').style.visibility = 'visible';
+        window.addEventListener('keydown', keyDownHandler);
+        window.addEventListener("keyup", keyUpHandler);
+
         l = new Niveau(level.grille);
         l.sol = level.sol;
         l.objets = unsoftenObjects(level.objets);
@@ -122,8 +149,12 @@ let init = async function () {
 
     });
 
-    window.addEventListener('keydown', keyDownHandler);
-    window.addEventListener("keyup", keyUpHandler);
+    
+    document.getElementById("createBtn").addEventListener("click", (e)=>{
+        let input = document.getElementById("inputRoom")
+        let roomName = input.value;
+        socket.emit("createRoom", roomName);
+    });
 
     let fps = 0;
     let showFPS = false;
@@ -200,6 +231,7 @@ let init = async function () {
             }
     });
 }
+
 
 /**
  * fonction de désérialization d'un personnage

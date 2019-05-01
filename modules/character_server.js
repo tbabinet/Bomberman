@@ -1,4 +1,3 @@
-const common = require('./common');
 const BombeServer = require('./bombe_server');
 
 class PersonnageServer{
@@ -15,7 +14,7 @@ class PersonnageServer{
      * ne se trouve pas dans l'explosion. Si oui, il meurt
      * 
      */
-    constructor(l, nb, id){
+    constructor(l, nb, id, em){
         this.speed = 1; 
 
         this.posX = 20;
@@ -36,7 +35,7 @@ class PersonnageServer{
         this.dead = false;
         this.playerNumber =nb;   
         this.id = id;
-        this.eventEmitter = common.commonEmitter;
+        this.eventEmitter = em;
 
         this.eventEmitter.on('bombExploded', (bomb)=>{
             for (let i = bomb.x - bomb.rangeLeft; i <= bomb.x + bomb.rangeRight; i++) {
@@ -113,7 +112,7 @@ class PersonnageServer{
      * @param {Number} y la position x du personnage au moment de déposer la bombe 
      */
     dropBomb(x, y){
-        return new BombeServer(Math.trunc(x/20), Math.trunc(y/20), 2, 2, this.level, this.bombType);
+        return new BombeServer(Math.trunc(x/20), Math.trunc(y/20), 2, 2, this.level, this.bombType, this.eventEmitter);
     }
 
     /**

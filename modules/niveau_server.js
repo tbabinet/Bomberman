@@ -1,7 +1,8 @@
 const GhostServer = require('./ghost_server');
 const BigBombServer = require('./bigbomb_server');
 const SpeedBoostServer = require('./speedBoost_server');
-const common = require('./common');
+const BlocServer = require('./bloc_server');
+
 
 
 class NiveauServer{
@@ -13,10 +14,46 @@ class NiveauServer{
      * personnage)
      * @param {Array} grille la grille représentant le niveau, décodée d'un fichier JSON au préalable 
      */
-    constructor(grille){
-        this.grille = grille;
+    constructor(em){
+
+        let obj = require("../multi/niveau1.json");
+        let grid = obj.level;
+        let gridBloc = new Array();
+        let i = 0;
+        
+        
+        grid.forEach(line => {
+            let j = 0;
+            let ligne = new Array();
+            line.forEach(col=>{
+                let bloc;
+                switch (col) {
+                    case 0://bords du niveau
+                        
+                        bloc = new BlocServer(i,j,grid[i][j], false, false, em);
+                        break;
+                    case 1://sol simple
+                        bloc = new BlocServer(i,j,grid[i][j], false, true, em);
+                        break;
+                    case 2://obstacle destructible 
+                        bloc = new BlocServer(i,j,grid[i][j], true, false, em);
+                        break;
+                    case 3://obstacle indestructible
+                        bloc = new BlocServer(i,j,grid[i][j], false, false, em);
+                        break;
+                    case 4://sortie pas découverte
+                        bloc = new BlocServer(i,j,grid[i][j], false, false, em);
+                        break;
+                }
+                ligne.push(bloc);
+                j++;
+            });
+            gridBloc.push(ligne);
+            i++;
+        });
+
+        this.grille = gridBloc;
         this.sol = new Array();
-        this.objets = new Array();
         this.grille.forEach(line => {
             line.forEach(bloc=>{
                 if(bloc.type===1){
@@ -24,13 +61,13 @@ class NiveauServer{
                 }
             });
         });
+        this.objets = new Array();
 
-        let eventEmiter = common.commonEmitter;
-        eventEmiter.on('objectUsed', (obj)=>{
+        this.eventEmiter = em;
+        this.eventEmiter.on('objectUsed', (obj)=>{
             this.objets = this.objets.filter(b=>b!==obj);
-            eventEmiter.emit("listObjectChanged");
+            this.eventEmiter.emit("listObjectChanged");
         });
-
 
         /**
          * type :
@@ -46,13 +83,13 @@ class NiveauServer{
             let randBloc = this.sol[iRandBloc];
             switch (objType) {
                 case 0:
-                    obj = new GhostServer(randBloc.posY, randBloc.posX);        
+                    obj = new GhostServer(randBloc.posY, randBloc.posX, em);        
                     break;
                 case 1:
-                    obj = new BigBombServer(randBloc.posY, randBloc.posX);
+                    obj = new BigBombServer(randBloc.posY, randBloc.posX, em);
                     break;
                 case 2:
-                    obj = new SpeedBoostServer(randBloc.posY, randBloc.posX);
+                    obj = new SpeedBoostServer(randBloc.posY, randBloc.posX, em);
                 default:
                     break;
                 

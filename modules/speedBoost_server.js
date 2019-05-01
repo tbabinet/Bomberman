@@ -7,8 +7,8 @@ class SpeedBoostServer extends ObjetServer{
      * @param {position en x de l'objet} x 
      * @param {position en y de l'objet} y 
      */
-    constructor(x,y){
-        super(x,y);
+    constructor(x,y, em){
+        super(x,y, em);
         this.eventEmitter.on('charMoved', this.handler.bind(this));
         this.timer=5;
     }

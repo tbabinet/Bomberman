@@ -7,8 +7,8 @@ class BigBombServer extends ObjetServer{
      * @param {position en x de l'objet} x 
      * @param {position en y de l'objet} y 
      */
-    constructor(x,y){
-        super(x,y);
+    constructor(x,y, em){
+        super(x,y, em);
         
         this.draw_state = 0; 
         this.eventEmitter.on('charMoved', this.handler.bind(this));

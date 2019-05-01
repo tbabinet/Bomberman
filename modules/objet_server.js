@@ -1,5 +1,3 @@
-const common = require('./common');
-
 class ObjetServer{
     /**
      * classe de base d'un objet,
@@ -7,10 +5,10 @@ class ObjetServer{
      * @param {Number} x coordonnées en x
      * @param {Number} y coordonnées en y 
      */
-    constructor(x, y){
+    constructor(x, y, em){
         this.x = x;
         this.y = y;
-        this.eventEmitter = common.commonEmitter;
+        this.eventEmitter = em;
         this.used=false;
         
     }
