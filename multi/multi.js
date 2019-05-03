@@ -10,10 +10,9 @@ let init = async function () {
     let animationFrameId;
 
     socket.on('rooms', (roomList)=>{
-        
         let roomsDiv = document.getElementById("rooms");
         for (const room in roomList) {
-            if (roomList.hasOwnProperty(room) && roomList[room]<4) {
+            if (roomList.hasOwnProperty(room)) {
                 let roomHTML = document.createElement("div"); 
                 let roomInfos = document.createElement("p");
                 roomInfos.innerHTML = room +" "+roomList[room]+"/4" ;
@@ -28,6 +27,30 @@ let init = async function () {
                 roomsDiv.appendChild(roomHTML);
             }
         }
+    });
+
+    /**
+     * salle pleine : on affiche une alerte en laissant la liste intouchée
+     */
+    socket.on('roomFull', ()=>{
+        let lobby = document.getElementById('lobby');
+        let warnDiv = document.createElement("div");
+        warnDiv.className = "alert alert-warning";
+        warnDiv.setAttribute("role", "alert");
+        warnDiv.innerHTML = "Salle pleine !";
+        lobby.insertBefore(warnDiv, lobby.firstChild);
+    });
+
+    /**
+     * salle pleine : on affiche une alerte en laissant la liste intouchée
+     */
+    socket.on('roomAlreadyExists', ()=>{
+        let lobby = document.getElementById('lobby');
+        let warnDiv = document.createElement("div");
+        warnDiv.className = "alert alert-warning";
+        warnDiv.setAttribute("role", "alert");
+        warnDiv.innerHTML = "Une salle de ce nom existe déjà !";
+        lobby.insertBefore(warnDiv, lobby.firstChild);
     });
 
     /**
@@ -129,7 +152,7 @@ let init = async function () {
 
 
     /**
-     * fin du jeu : on affiche l'écran de fin, et on donne à l'utilisateur la possibilité de retourner au menu ou de relancer une partie
+     * fin du jeu : on affiche l'écran de fin, et on donne à l'utilisateur la possibilité de retourner au menu ou de relancer une partie (retour lobby)
      */
     socket.on("end_game", (winner)=>{
         window.removeEventListener("keydown", keyDownHandler);

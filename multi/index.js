@@ -74,7 +74,7 @@ function assignStartPosition(room){
 
 function ioHandler(socket, room){
     socket.join(room);
-
+    
     roomList[room]++;
 
     let c = new PersonnageServer(listLevels[room], nb_player, socket.id, eventHandlersList[room]);
@@ -143,6 +143,8 @@ function ioHandler(socket, room){
 
     eventHandlersList[room].on("charDie", (c)=>{          
         if(c.id==socket.id){
+            //console.log(listPlayers);
+            // console.log(listPlayers[room]);
             let serialized = serializeChar(listPlayers[room][socket.id]);
             socket.emit("charDie", serialized);
             socket.to(room).emit("change_player_state", socket.id, serialized);
@@ -162,15 +164,17 @@ function ioHandler(socket, room){
         }
         
         if(alivePlayers.length===1){
-            socket.emit("end_game", alivePlayers[0].playerNumber);
-            socket.to(room).emit("end_game", alivePlayers[0].playerNumber);
-            listPlayers = {};
-            init=false;
+            setTimeout(()=>{
+                socket.emit("end_game", alivePlayers[0].playerNumber);
+                socket.to(room).emit("end_game", alivePlayers[0].playerNumber);
+                listPlayers[room] = {};
+                init=false;
+            }, 500);
+
         }
     });
 
     
-
     /**
      * l'état du niveau a changé : on a modifié un bloc
      */
@@ -187,6 +191,7 @@ function ioHandler(socket, room){
     socket.on('disconnect', function () {
         nb_player--;
         delete listPlayers[room][socket.id];
+        roomList[room]--;
         socket.to(room).emit("player_disconnected", socket.id);
         console.log('a player disconnected, '+nb_player+'restants');
     });
@@ -195,21 +200,35 @@ function ioHandler(socket, room){
 
 io.on('connection', (socket)=>{
     socket.emit('rooms', roomList);
+    /**
+     * On crée une nouvelle
+     */
     socket.on('createRoom', (room)=>{
-        let em = new events.EventEmitter();
-        em.setMaxListeners(Number.POSITIVE_INFINITY);
+        if(listLevels.hasOwnProperty(room)){
+            socket.emit("roomAlreadyExists");
+        }
+        else{
+            let em = new events.EventEmitter();
+            em.setMaxListeners(Number.POSITIVE_INFINITY);
+            
+            let l = new NiveauServer(em);
+            
+            listLevels[room]=l;      
+            eventHandlersList[room] = em;
+            listPlayers[room]={}
+            roomList[room]=0;
+            ioHandler(socket, room);  
+        }
         
-        let l = new NiveauServer(em);
-        listLevels[room]=l;      
-        eventHandlersList[room] = em;
-        
-        
-        listPlayers[room]={}
-        roomList[room]=0;
-        ioHandler(socket, room);
     });
     socket.on('joinRoom', (room)=>{
-        ioHandler(socket, room);
+        if(roomList[room]===4){
+            socket.emit('roomFull');
+        }
+        else{
+            ioHandler(socket, room);
+        }
+        
     });
 });
 

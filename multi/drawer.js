@@ -722,7 +722,7 @@ class Drawer{
         this.context.fillStyle = "black";
         this.context.fillRect(0,0,800,700);
         this.context.fillStyle = "white";
-        let text1 = "Joueur "+winner+" a gagné !";
+        let text1 = "Joueur "+winner+1+" a gagné !";
         this.context.font = "15px Courier";
         let text2 = "Appuyez sur r pour relancer une partie, m pour retourner au menu principal.";
         let m1 = this.context.measureText(text1).width;
