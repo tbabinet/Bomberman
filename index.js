@@ -2,8 +2,8 @@ const app = require('http').createServer(handler)
 const io = require('socket.io')(app);
 const fs = require('fs');
 const path = require('path');
-const PersonnageServer = require ('../modules/character_server');
-const NiveauServer = require('../modules/niveau_server');
+const PersonnageServer = require ('./modules/character_server');
+const NiveauServer = require('./modules/niveau_server');
 const events = require('events');
 
 const MIME_TYPES = {
